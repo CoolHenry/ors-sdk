@@ -1,8 +1,8 @@
-import getURLSearchParams from "./getURLSearchParams";
-import { isString } from "./isType";
-import trim from "./trim";
-import urlParse from "./urlParse";
-import { Logger } from "@/utils/common";
+import getURLSearchParams from './getURLSearchParams';
+import { isString } from './isType';
+import trim from './trim';
+import urlParse from './urlParse';
+import { Logger } from '@/utils/common';
 
 /**
  * @typedef SearchParams
@@ -61,7 +61,7 @@ export default function _URL(url: string): URL | URLObject {
   //var basicProps = ['hash', 'host', 'hostname', 'href', 'origin', 'password', 'pathname', 'port', 'protocol', 'search', 'username'];
   // Some browsers allow objects to be created via URL constructor, but instances do not have the expected url properties.
   // See https://www.caniuse.com/#feat=url
-  if (typeof window.URL === "function") {
+  if (typeof window.URL === 'function') {
     result = new URL(url);
     if (!result.searchParams) {
       result.searchParams = (function () {
@@ -82,49 +82,37 @@ export default function _URL(url: string): URL | URLObject {
     if (_regex.test(url) === false) {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
-      Logger.log("Invalid URL");
+      Logger.log('Invalid URL');
       // 返回符合 URLObject 类型的空对象
       return {
-        hash: "",
-        host: "",
-        hostname: "",
-        href: "",
-        password: "",
-        pathname: "",
-        port: "",
-        search: "",
-        username: "",
-        protocol: "",
-        origin: "",
-        searchParams: { get: () => "" },
+        hash: '',
+        host: '',
+        hostname: '',
+        href: '',
+        password: '',
+        pathname: '',
+        port: '',
+        search: '',
+        username: '',
+        protocol: '',
+        origin: '',
+        searchParams: { get: () => '' },
       };
     }
     const instance = urlParse(url);
     result.hash = instance._values.Fragment;
-    result.host = instance._values.Host
-      ? instance._values.Host +
-        (instance._values.Port ? ":" + instance._values.Port : "")
-      : "";
+    result.host = instance._values.Host ? instance._values.Host + (instance._values.Port ? ':' + instance._values.Port : '') : '';
     result.href = instance._values.URL;
     result.password = instance._values.Password;
     result.pathname = instance._values.Path;
     result.port = instance._values.Port;
-    result.search = instance._values.QueryString
-      ? "?" + instance._values.QueryString
-      : "";
+    result.search = instance._values.QueryString ? '?' + instance._values.QueryString : '';
     result.username = instance._values.Username;
     result.hostname = instance._values.Hostname;
-    result.protocol = instance._values.Protocol
-      ? instance._values.Protocol + ":"
-      : "";
-    result.origin = instance._values.Origin
-      ? instance._values.Origin +
-        (instance._values.Port ? ":" + instance._values.Port : "")
-      : "";
+    result.protocol = instance._values.Protocol ? instance._values.Protocol + ':' : '';
+    result.origin = instance._values.Origin ? instance._values.Origin + (instance._values.Port ? ':' + instance._values.Port : '') : '';
     result.searchParams = (function () {
-      const params: Record<string, any> = getURLSearchParams(
-        "?" + instance._values.QueryString,
-      );
+      const params: Record<string, any> = getURLSearchParams('?' + instance._values.QueryString);
       return {
         get: function (searchParam: string) {
           return params[searchParam];

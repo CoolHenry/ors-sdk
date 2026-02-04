@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import type { PolymorphicEvent } from "../types/error";
+import type { PolymorphicEvent } from '../types/error';
 
 // eslint-disable-next-line @typescript-eslint/unbound-method
 const objectToString = Object.prototype.toString;
@@ -14,10 +14,10 @@ const objectToString = Object.prototype.toString;
  */
 export function isError(wat: unknown): wat is Error {
   switch (objectToString.call(wat)) {
-    case "[object Error]":
-    case "[object Exception]":
-    case "[object DOMException]":
-    case "[object WebAssembly.Exception]":
+    case '[object Error]':
+    case '[object Exception]':
+    case '[object DOMException]':
+    case '[object WebAssembly.Exception]':
       return true;
     default:
       return isInstanceOf(wat, Error);
@@ -33,7 +33,7 @@ export function isErrorLike(wat: any): wat is {
   error: string;
   message: string;
 } {
-  if (typeof wat?.error === "string" && typeof wat?.message === "string") {
+  if (typeof wat?.error === 'string' && typeof wat?.message === 'string') {
     return true;
   }
 
@@ -59,7 +59,7 @@ function isBuiltin(wat: unknown, className: string): boolean {
  * @returns A boolean representing the result.
  */
 export function isErrorEvent(wat: unknown): boolean {
-  return isBuiltin(wat, "ErrorEvent");
+  return isBuiltin(wat, 'ErrorEvent');
 }
 
 /**
@@ -70,7 +70,7 @@ export function isErrorEvent(wat: unknown): boolean {
  * @returns A boolean representing the result.
  */
 export function isDOMError(wat: unknown): boolean {
-  return isBuiltin(wat, "DOMError");
+  return isBuiltin(wat, 'DOMError');
 }
 
 /**
@@ -81,7 +81,7 @@ export function isDOMError(wat: unknown): boolean {
  * @returns A boolean representing the result.
  */
 export function isDOMException(wat: unknown): boolean {
-  return isBuiltin(wat, "DOMException");
+  return isBuiltin(wat, 'DOMException');
 }
 
 /**
@@ -92,7 +92,7 @@ export function isDOMException(wat: unknown): boolean {
  * @returns A boolean representing the result.
  */
 export function isString(wat: unknown): wat is string {
-  return isBuiltin(wat, "String");
+  return isBuiltin(wat, 'String');
 }
 
 /**
@@ -103,7 +103,7 @@ export function isString(wat: unknown): wat is string {
  * @returns A boolean representing the result.
  */
 export function isPlainObject(wat: unknown): wat is Record<string, unknown> {
-  return isBuiltin(wat, "Object");
+  return isBuiltin(wat, 'Object');
 }
 
 /**
@@ -114,7 +114,7 @@ export function isPlainObject(wat: unknown): wat is Record<string, unknown> {
  * @returns A boolean representing the result.
  */
 export function isEvent(wat: unknown): wat is PolymorphicEvent {
-  return typeof Event !== "undefined" && isInstanceOf(wat, Event);
+  return typeof Event !== 'undefined' && isInstanceOf(wat, Event);
 }
 
 /**
@@ -125,7 +125,7 @@ export function isEvent(wat: unknown): wat is PolymorphicEvent {
  * @returns A boolean representing the result.
  */
 export function isElement(wat: unknown): boolean {
-  return typeof Element !== "undefined" && isInstanceOf(wat, Element);
+  return typeof Element !== 'undefined' && isInstanceOf(wat, Element);
 }
 
 /**
@@ -136,7 +136,7 @@ export function isElement(wat: unknown): boolean {
  * @returns A boolean representing the result.
  */
 export function isRegExp(wat: unknown): wat is RegExp {
-  return isBuiltin(wat, "RegExp");
+  return isBuiltin(wat, 'RegExp');
 }
 
 /**
@@ -145,7 +145,7 @@ export function isRegExp(wat: unknown): wat is RegExp {
  */
 export function isThenable(wat: any): wat is PromiseLike<any> {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-  return Boolean(wat?.then && typeof wat.then === "function");
+  return Boolean(wat?.then && typeof wat.then === 'function');
 }
 
 /**
@@ -156,12 +156,7 @@ export function isThenable(wat: any): wat is PromiseLike<any> {
  * @returns A boolean representing the result.
  */
 export function isSyntheticEvent(wat: unknown): boolean {
-  return (
-    isPlainObject(wat) &&
-    "nativeEvent" in wat &&
-    "preventDefault" in wat &&
-    "stopPropagation" in wat
-  );
+  return isPlainObject(wat) && 'nativeEvent' in wat && 'preventDefault' in wat && 'stopPropagation' in wat;
 }
 
 /**
@@ -194,11 +189,7 @@ interface VueViewModel {
  */
 export function isVueViewModel(wat: unknown): boolean {
   // Not using Object.prototype.toString because in Vue 3 it would read the instance's Symbol(Symbol.toStringTag) property.
-  return !!(
-    typeof wat === "object" &&
-    wat !== null &&
-    ((wat as VueViewModel).__isVue || (wat as VueViewModel)._isVue)
-  );
+  return !!(typeof wat === 'object' && wat !== null && ((wat as VueViewModel).__isVue || (wat as VueViewModel)._isVue));
 }
 
 /**
@@ -207,5 +198,5 @@ export function isVueViewModel(wat: unknown): boolean {
  * Returns false if Request is not available in the current runtime.
  */
 export function isRequest(request: unknown): request is Request {
-  return typeof Request !== "undefined" && isInstanceOf(request, Request);
+  return typeof Request !== 'undefined' && isInstanceOf(request, Request);
 }

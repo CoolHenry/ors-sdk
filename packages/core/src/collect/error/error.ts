@@ -1,10 +1,10 @@
-import Base from "../base";
-import getrandomNumber from "@/utils/getrandomNumber";
-import MD5 from "md5-es";
-import { logReport, eventBus } from "@/config";
-import { openWhiteScreen } from "@/plugin/whiteScreen";
-import { userInfoStore, windowOrs, Breadcrumbs } from "@/store";
-import { sdkLifeTimeEmitter } from "@/utils/mitt";
+import Base from '../base';
+import getrandomNumber from '@/utils/getrandomNumber';
+import MD5 from 'md5-es';
+import { logReport, eventBus } from '@/config';
+import { openWhiteScreen } from '@/plugin/whiteScreen';
+import { userInfoStore, windowOrs, Breadcrumbs } from '@/store';
+import { sdkLifeTimeEmitter } from '@/utils/mitt';
 import {
   JsErrorInfoType,
   BlankScreenErrorEventType,
@@ -17,12 +17,12 @@ import {
   ViewAttrsType,
   JsErrorEventType,
   whiteScreenMonitorParamsType,
-} from "@/types/init";
-import type { SeverityLevel, Mechanism } from "@/types/error";
-import { isErrorAsDiscarded } from "@/utils/error";
-import { ORS_ERROR_RETHROW } from "@/constant";
-import { needSkipError } from "@/utils/error";
-import { scopeHub } from "@/api//scope";
+} from '@/types/init';
+import type { SeverityLevel, Mechanism } from '@/types/error';
+import { isErrorAsDiscarded } from '@/utils/error';
+import { ORS_ERROR_RETHROW } from '@/constant';
+import { needSkipError } from '@/utils/error';
+import { scopeHub } from '@/api//scope';
 export default class ErrorBase extends Base {
   public category: string;
   public level: string;
@@ -36,11 +36,11 @@ export default class ErrorBase extends Base {
     this.params = params;
     // this.category = ErrorCategoryEnum.UNKNOW_ERROR; //错误类型
     // this.level = ErrorLevelEnum.INFO; //错误等级
-    this.category = ""; //错误类型
-    this.level = ""; //错误等级
-    this.msg = ""; //错误信息
-    this.url = ""; //错误信息地址
-    this.errorObj = ""; //错误堆栈
+    this.category = ''; //错误类型
+    this.level = ''; //错误等级
+    this.msg = ''; //错误信息
+    this.url = ''; //错误信息地址
+    this.errorObj = ''; //错误堆栈
   }
 
   /**
@@ -57,17 +57,9 @@ export default class ErrorBase extends Base {
     projectInfoParams?: ProjectInfoType;
   }) {
     try {
-      const {
-        message,
-        error,
-        errorSubType,
-        mechanism,
-        filename = "",
-        projectInfoParams,
-      } = options;
+      const { message, error, errorSubType, mechanism, filename = '', projectInfoParams } = options;
       // 如果未采集到错误信息和错误堆栈信息的时候,不上报这种错误,对业务方没有帮助
-      if (!message && (!error || (error instanceof Error && !error?.stack)))
-        return;
+      if (!message && (!error || (error instanceof Error && !error?.stack))) return;
 
       //如果该错误已经被捕获上报，再次被rethrow出来的不进行上报
       if ((error as any)?.[ORS_ERROR_RETHROW]) return;
@@ -81,15 +73,15 @@ export default class ErrorBase extends Base {
       const viewAttrs: ViewAttrsType = windowOrs.orsViewAttrs;
       const errorEvent: JsErrorEventType = {
         id: getrandomNumber(32),
-        rumType: "ors_error",
-        type: "js",
+        rumType: 'ors_error',
+        type: 'js',
         subtype: errorSubType,
         mechanism,
         msg: message,
-        source: "js",
-        catId: MD5.hash(message || "undefined"),
+        source: 'js',
+        catId: MD5.hash(message || 'undefined'),
         errorObj: (error as Error)?.stack,
-        sessionType: "user",
+        sessionType: 'user',
         filename,
       };
       const breadcrumbs = Breadcrumbs.get();
@@ -104,22 +96,16 @@ export default class ErrorBase extends Base {
         ...errorEvent,
         extra: scopeData.extra,
       };
-      if (errorSubType === "vue") {
+      if (errorSubType === 'vue') {
         // vue的组件错误单独处理
-        errorInfo.componentName = (
-          error as { componentName?: string }
-        )?.componentName;
-        errorInfo.orsCompMark =
-          (error as { orsCompMark?: string })?.orsCompMark || "";
+        errorInfo.componentName = (error as { componentName?: string })?.componentName;
+        errorInfo.orsCompMark = (error as { orsCompMark?: string })?.orsCompMark || '';
       }
 
-      if (errorSubType === "react") {
+      if (errorSubType === 'react') {
         // react的组件错误单独处理
-        errorInfo.componentName = (
-          error as { componentName?: string }
-        )?.componentName;
-        errorInfo.orsCompMark =
-          (error as { orsCompMark?: string })?.orsCompMark || "";
+        errorInfo.componentName = (error as { componentName?: string })?.componentName;
+        errorInfo.orsCompMark = (error as { orsCompMark?: string })?.orsCompMark || '';
       }
 
       // 如果业务方使用和ubs一起的可观测的功能，需要加上scene字段
@@ -128,7 +114,7 @@ export default class ErrorBase extends Base {
       // 更新页面的结束时长
       this.updateViewEndTime();
       this.openWhiteScreenMonitor({ errorInfo });
-      sdkLifeTimeEmitter.emit("reportError", errorInfo);
+      sdkLifeTimeEmitter.emit('reportError', errorInfo);
       // 如果错误通过插件被废弃，则不上报
       if (isErrorAsDiscarded(errorInfo)) {
         return;
@@ -143,7 +129,7 @@ export default class ErrorBase extends Base {
       //清除面包屑
       Breadcrumbs.clear();
     } catch (error) {
-      logReport("recordError", error);
+      logReport('recordError', error);
     }
   }
   // 开启白屏检测
@@ -152,58 +138,55 @@ export default class ErrorBase extends Base {
     if (windowOrs.plugins.blankScreen.autoDetect) {
       let blankScreenInfo: Partial<BlankScreenErrorEventType> = {
         id: getrandomNumber(32),
-        rumType: "ors_error",
-        type: "blank_screen",
-        subtype: "js_error",
-        source: "js",
-        sessionType: "user",
-        reasonId: "",
+        rumType: 'ors_error',
+        type: 'blank_screen',
+        subtype: 'js_error',
+        source: 'js',
+        sessionType: 'user',
+        reasonId: '',
       };
       if (errorInfo) {
         // 检测到白屏时，修改上报信息
         openWhiteScreen(
           (res: { status: string }) => {
-            if (res.status === "error") {
+            if (res.status === 'error') {
               blankScreenInfo.reasonId = errorInfo.id;
               // 白屏的errorId使用新生成的
               blankScreenInfo.id = getrandomNumber(32);
-              blankScreenInfo.subtype = "js_error";
+              blankScreenInfo.subtype = 'js_error';
               blankScreenInfo = {
                 ...errorInfo,
                 ...blankScreenInfo,
               } as BlankScreenErrorInfoType;
-              const blankScreenErrorInfo: BlankScreenErrorInfoType =
-                blankScreenInfo as BlankScreenErrorInfoType;
+              const blankScreenErrorInfo: BlankScreenErrorInfoType = blankScreenInfo as BlankScreenErrorInfoType;
               this.reportData([blankScreenErrorInfo]);
             }
           },
           {
             skeletonProject: false,
             whiteBoxElements: windowOrs.plugins.blankScreen.rootSelector,
-          },
+          }
         );
       }
       // 监听错误的资源
-      eventBus.on("errorStaticRes", (resource) => {
+      eventBus.on('errorStaticRes', (resource) => {
         // 检测到白屏时，修改上报信息
         openWhiteScreen(
           (res: { status: string }) => {
-            if (res.status === "error") {
+            if (res.status === 'error') {
               // 在这里上报
               const userInfo = userInfoStore.get() as ActionInfoType;
               // resonId使用最近上一次的error_Id
               blankScreenInfo.reasonId = resource.id;
               // 白屏的errorId使用新生成的
               blankScreenInfo.id = getrandomNumber(32);
-              blankScreenInfo.subtype = resource.netType + "_error";
+              blankScreenInfo.subtype = resource.netType + '_error';
               blankScreenInfo.resourceUrl = resource.url;
               blankScreenInfo.resourceMethod = resource?.method;
               blankScreenInfo.resourceStatus = resource?.status;
-              blankScreenInfo.source = "network";
+              blankScreenInfo.source = 'network';
               blankScreenInfo.msg = resource.url;
-              blankScreenInfo.catId = MD5.hash(
-                resource?.url + resource?.status + resource?.method,
-              );
+              blankScreenInfo.catId = MD5.hash(resource?.url + resource?.status + resource?.method);
               blankScreenInfo = {
                 ...blankScreenInfo,
                 ...userInfo,
@@ -211,27 +194,26 @@ export default class ErrorBase extends Base {
                 ...this.getSessionInfo(),
                 ...this.actionInfo(),
               };
-              const blankScreenErrorInfo: BlankScreenErrorInfoType =
-                blankScreenInfo as BlankScreenErrorInfoType;
+              const blankScreenErrorInfo: BlankScreenErrorInfoType = blankScreenInfo as BlankScreenErrorInfoType;
               this.reportData([blankScreenErrorInfo]);
             }
           },
           {
             skeletonProject: false,
             whiteBoxElements: windowOrs.plugins.blankScreen.rootSelector,
-          },
+          }
         );
       });
       // 监听路由切换时是否产生白屏
-      eventBus.on("pageChange", () => {
+      eventBus.on('pageChange', () => {
         // 检测到白屏时，修改上报信息
         openWhiteScreen(
           (res: { status: string }) => {
-            if (res.status === "error") {
-              blankScreenInfo.reasonId = "";
+            if (res.status === 'error') {
+              blankScreenInfo.reasonId = '';
               // 白屏的errorId使用新生成的
               blankScreenInfo.id = getrandomNumber(32);
-              blankScreenInfo.subtype = "unknown";
+              blankScreenInfo.subtype = 'unknown';
               blankScreenInfo.msg = windowOrs.orsViewPage.viewUrl;
               blankScreenInfo.catId = MD5.hash(windowOrs.orsViewPage.viewUrl);
               blankScreenInfo = {
@@ -240,15 +222,14 @@ export default class ErrorBase extends Base {
                 ...this.getSessionInfo(),
                 ...this.actionInfo(),
               };
-              const blankScreenErrorInfo: BlankScreenErrorInfoType =
-                blankScreenInfo as BlankScreenErrorInfoType;
+              const blankScreenErrorInfo: BlankScreenErrorInfoType = blankScreenInfo as BlankScreenErrorInfoType;
               this.reportData([blankScreenErrorInfo]);
             }
           },
           {
             skeletonProject: false,
             whiteBoxElements: windowOrs.plugins.blankScreen.rootSelector,
-          },
+          }
         );
       });
     }

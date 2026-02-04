@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-import MD5 from "md5-es";
-import { logReport } from "@/config";
-import { isString, isObject } from "@/utils/isType";
-import { windowOrs } from "@/store";
+import MD5 from 'md5-es';
+import { logReport } from '@/config';
+import { isString, isObject } from '@/utils/isType';
+import { windowOrs } from '@/store';
 // 参考文档: https://weikezhijia.feishu.cn/docx/IGqPdDWmSomyvsxKd2CcyVSjnrn
 
 //ors_id三对
@@ -25,8 +25,8 @@ const scenesMap = {};
 
 // 当前的值
 const localSaveId = {
-  curOrsId: "",
-  curOrsPid: "",
+  curOrsId: '',
+  curOrsPid: '',
 };
 // md5生成orsId
 const getOrsId = (params: any): object => {
@@ -60,13 +60,13 @@ const getOrsId = (params: any): object => {
       }
     }
     // 如果ors_id_ps和ors_pid_ps为空的话,取缓存中的,针对页面刷新以及相同域名跨域名的场景
-    if (!ors_id_ps && !ors_pid_ps && localStorage.getItem("_orsObserveId")) {
-      const orsObId = JSON.parse(localStorage.getItem("_orsObserveId") || "{}");
+    if (!ors_id_ps && !ors_pid_ps && localStorage.getItem('_orsObserveId')) {
+      const orsObId = JSON.parse(localStorage.getItem('_orsObserveId') || '{}');
       ors_id_ps = orsObId.curOrsId;
       ors_pid_ps = orsObId.curOrsPid;
     }
 
-    localStorage.setItem("_orsObserveId", JSON.stringify(localSaveId));
+    localStorage.setItem('_orsObserveId', JSON.stringify(localSaveId));
     return {
       ors_id,
       // ors_pid_pg,
@@ -75,7 +75,7 @@ const getOrsId = (params: any): object => {
       ors_pid_ps,
     };
   } catch (error) {
-    logReport("getOrsId", error);
+    logReport('getOrsId', error);
     return {};
   }
 };
@@ -99,14 +99,14 @@ const getScenesId = (params: any) => {
     };
     return { ors_scenes_pg };
   } catch (error) {
-    logReport("getScenesId", error);
+    logReport('getScenesId', error);
     return null;
   }
 };
 
 const paramsValidator = (eventName: string, params: object) => {
   if (!isString(eventName) || !isObject(params)) return false;
-  const requiredProps = ["p_id", "m_id", "t_id", "s_id", "e_id"];
+  const requiredProps = ['p_id', 'm_id', 't_id', 's_id', 'e_id'];
   const hasAllProps = requiredProps.every((prop) => prop in params);
   if (!hasAllProps) return false;
   return true;
@@ -116,18 +116,18 @@ const getOrsIdMap = (eventName: string, params: Record<string, any>) => {
   try {
     if (!paramsValidator(eventName, params)) return params;
     // 可采集记录的事件名称
-    const collectEventName = ["page_view", "element_click", "app_event_banner"];
+    const collectEventName = ['page_view', 'element_click', 'app_event_banner'];
     if (!collectEventName.includes(eventName)) return params;
     getScenesId(params);
 
     const orsIdAll: any = getOrsId(params);
-    if (orsIdAll?.ors_id) params["ors_id"] = orsIdAll.ors_id;
-    if (orsIdAll?.ors_id_ps) params["ors_id_ps"] = orsIdAll.ors_id_ps;
-    if (orsIdAll?.ors_pid_ps) params["ors_pid_ps"] = orsIdAll.ors_pid_ps;
+    if (orsIdAll?.ors_id) params['ors_id'] = orsIdAll.ors_id;
+    if (orsIdAll?.ors_id_ps) params['ors_id_ps'] = orsIdAll.ors_id_ps;
+    if (orsIdAll?.ors_pid_ps) params['ors_pid_ps'] = orsIdAll.ors_pid_ps;
 
     return params;
   } catch (error) {
-    logReport("addUbsOrsId", error);
+    logReport('addUbsOrsId', error);
     return params;
   }
 };

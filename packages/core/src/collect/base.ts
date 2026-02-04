@@ -1,17 +1,11 @@
-import { ReportClient, mergeDuplicateViewData } from "../report/reportClient";
-import { logReport, SamplingManager } from "@/config";
-import { createSessionId } from "@/utils/sessionCalculate";
-import { getCurrentTime } from "@/utils/getCurTime";
-import { CollectStore } from "@/store";
-import type {
-  ProjectInfoType,
-  SessionInfosType,
-  SessionParams,
-  CollectStoreType,
-  ActionIdType,
-} from "@/types/init";
-import { windowOrs } from "@/store/windowOrs";
-import DataHandle from "../dataHandle";
+import { ReportClient, mergeDuplicateViewData } from '../report/reportClient';
+import { logReport, SamplingManager } from '@/config';
+import { createSessionId } from '@/utils/sessionCalculate';
+import { getCurrentTime } from '@/utils/getCurTime';
+import { CollectStore } from '@/store';
+import type { ProjectInfoType, SessionInfosType, SessionParams, CollectStoreType, ActionIdType } from '@/types/init';
+import { windowOrs } from '@/store/windowOrs';
+import DataHandle from '../dataHandle';
 interface immediatelySendType {
   status: boolean;
   data: CollectStoreType;
@@ -49,19 +43,13 @@ export default class Base {
   }
 
   // 定时上报更新数据
-  updateDataQueue(
-    dataHandle: DataHandle,
-    immediatelySend: immediatelySendType,
-  ) {
+  updateDataQueue(dataHandle: DataHandle, immediatelySend: immediatelySendType) {
     try {
       const reportData = CollectStore.get();
       const deliverData = () => {
         const mergeDuplicateData = mergeDuplicateViewData(reportData);
         CollectStore.clear();
-        this.reportClient.sendData(
-          dataHandle.composeData(mergeDuplicateData),
-          dataHandle.getProjectInfo(),
-        );
+        this.reportClient.sendData(dataHandle.composeData(mergeDuplicateData), dataHandle.getProjectInfo());
       };
       // 上报规则：
       // 错误立即上报
@@ -69,10 +57,7 @@ export default class Base {
       // 闲时1s上报
       if (immediatelySend?.status) {
         // 错误立即上报
-        this.reportClient.sendData(
-          dataHandle.composeData([immediatelySend.data]),
-          dataHandle.getProjectInfo(),
-        );
+        this.reportClient.sendData(dataHandle.composeData([immediatelySend.data]), dataHandle.getProjectInfo());
       } else {
         if (reportData?.length >= 50) {
           // 大于或等于50条立即上报所有的
@@ -85,13 +70,13 @@ export default class Base {
                 deliverData();
               }
             } catch (error) {
-              logReport("闲时上报", error);
+              logReport('闲时上报', error);
             }
           }, 1000);
         }
       }
     } catch (error) {
-      logReport("updateDataQueue", error);
+      logReport('updateDataQueue', error);
     }
   }
 
@@ -100,21 +85,16 @@ export default class Base {
       if (Array.isArray(data) && data.length) {
         const dataHandle = this.reportClient.getDataHandle(projectInfo);
         data.forEach((item: CollectStoreType) => {
-          const isShouldReport = this.reportClient.shouldReportEvent(
-            this.options,
-            item,
-            projectInfo,
-          );
+          const isShouldReport = this.reportClient.shouldReportEvent(this.options, item, projectInfo);
           if (!isShouldReport) return;
 
-          const singleData: CollectStoreType | null =
-            this.reportClient.beforeSend(this.options, item);
+          const singleData: CollectStoreType | null = this.reportClient.beforeSend(this.options, item);
           if (!singleData?.rumType) return;
           const immediatelySend = {
             status: false,
             data: {} as CollectStoreType,
           };
-          if (singleData.rumType === "ors_error") {
+          if (singleData.rumType === 'ors_error') {
             immediatelySend.status = true;
             immediatelySend.data = singleData;
           } else if (singleData.rumType) {
@@ -126,7 +106,7 @@ export default class Base {
         });
       }
     } catch (error) {
-      logReport("reportData", error);
+      logReport('reportData', error);
     }
   }
 
@@ -136,8 +116,7 @@ export default class Base {
 
     // 会话时间超过4小时或者时间超过15分钟未操作时，重新生成sessionId,精确到微秒的计算时间
     if (
-      curTime - windowOrs.orsDataInfo.sessionInfo.sessionStartTime >
-        4 * 60 * 60 * 1000 * 1000 ||
+      curTime - windowOrs.orsDataInfo.sessionInfo.sessionStartTime > 4 * 60 * 60 * 1000 * 1000 ||
       (lastDataTime != 0 && curTime - lastDataTime > 15 * 60 * 1000 * 1000)
     ) {
       if (windowOrs.samplingConfig.session) {
@@ -180,13 +159,11 @@ export default class Base {
     try {
       const innerPageInfo = pageInfo || windowOrs.orsViewPage;
       innerPageInfo.viewEndTime = getCurrentTime() * 1000;
-      const timeSpentOnPage =
-        innerPageInfo.viewEndTime - innerPageInfo.viewStartTime;
+      const timeSpentOnPage = innerPageInfo.viewEndTime - innerPageInfo.viewStartTime;
 
-      innerPageInfo.spentDuration =
-        timeSpentOnPage > 0 ? Math.floor(timeSpentOnPage / 1000) : 0;
+      innerPageInfo.spentDuration = timeSpentOnPage > 0 ? Math.floor(timeSpentOnPage / 1000) : 0;
     } catch (error) {
-      logReport("updateViewEndTime", error);
+      logReport('updateViewEndTime', error);
     }
   }
 }

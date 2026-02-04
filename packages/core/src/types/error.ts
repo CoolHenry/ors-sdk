@@ -1,8 +1,4 @@
-export type XMLHttpRequestProp =
-  | "onload"
-  | "onerror"
-  | "onprogress"
-  | "onreadystatechange";
+export type XMLHttpRequestProp = 'onload' | 'onerror' | 'onprogress' | 'onreadystatechange';
 
 export interface BrowserApiErrorsOptions {
   setTimeout: boolean;
@@ -105,10 +101,4 @@ export interface PolymorphicEvent {
   readonly currentTarget?: unknown;
 }
 
-export type SeverityLevel =
-  | "fatal"
-  | "error"
-  | "warning"
-  | "log"
-  | "info"
-  | "debug";
+export type SeverityLevel = 'fatal' | 'error' | 'warning' | 'log' | 'info' | 'debug';

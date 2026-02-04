@@ -8,7 +8,7 @@
  * isString('1234') //=> true
  */
 export function isString(arg: any): boolean {
-  return Object.prototype.toString.call(arg) == "[object String]";
+  return Object.prototype.toString.call(arg) == '[object String]';
 }
 
 /** 检测传入参数是否是数组类型
@@ -24,7 +24,7 @@ export function isArray(arg: any): boolean {
   if (Array.isArray && isFunction(isArray)) {
     return Array.isArray(arg);
   }
-  return Object.prototype.toString.call(arg) === "[object Array]";
+  return Object.prototype.toString.call(arg) === '[object Array]';
 }
 
 /** 检测传入参数是否是函数
@@ -40,11 +40,7 @@ export function isFunction(arg: any) {
     return false;
   }
   const type = Object.prototype.toString.call(arg);
-  return (
-    type == "[object Function]" ||
-    type == "[object AsyncFunction]" ||
-    type == "[object GeneratorFunction]"
-  );
+  return type == '[object Function]' || type == '[object AsyncFunction]' || type == '[object GeneratorFunction]';
 }
 
 /** 检测传入参数是否是数字
@@ -58,10 +54,7 @@ export function isFunction(arg: any) {
  */
 export function isNumber(arg: any): boolean {
   /* eslint-disable-next-line */
-  return (
-    Object.prototype.toString.call(arg) == "[object Number]" &&
-    /[\d\.]+/.test(String(arg))
-  );
+  return Object.prototype.toString.call(arg) == '[object Number]' && /[\d.]+/.test(String(arg));
 }
 
 /** 检测传入参数是否是对象类型
@@ -77,6 +70,6 @@ export function isObject(arg: any): boolean {
   if (arg == null) {
     return false;
   } else {
-    return Object.prototype.toString.call(arg) == "[object Object]";
+    return Object.prototype.toString.call(arg) == '[object Object]';
   }
 }

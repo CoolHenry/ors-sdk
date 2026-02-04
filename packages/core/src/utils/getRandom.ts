@@ -1,5 +1,5 @@
-import { isObject } from "./isType";
-import getRandomBasic from "./getRandomBasic";
+import { isObject } from './isType';
+import getRandomBasic from './getRandomBasic';
 
 /** 安全的 js 随机数生成方式,返回与原生 Math.random 类似的 0-1 的随机数值
  * @function getRandom
@@ -10,15 +10,15 @@ import getRandomBasic from "./getRandomBasic";
  * getRandom() //=> 0.8368784293552812
  */
 export default function getRandom() {
-  if (typeof Uint32Array === "function") {
-    let cry = "";
-    if (typeof crypto !== "undefined") {
+  if (typeof Uint32Array === 'function') {
+    let cry = '';
+    if (typeof crypto !== 'undefined') {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       cry = crypto;
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
-    } else if (typeof msCrypto !== "undefined") {
+    } else if (typeof msCrypto !== 'undefined') {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       cry = msCrypto;

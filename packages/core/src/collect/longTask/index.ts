@@ -1,8 +1,8 @@
-import Base from "../base";
-import getrandomNumber from "@/utils/getrandomNumber";
-import highTime from "@/utils/highTime";
-import { logReport } from "@/config";
-import { userInfoStore, windowOrs } from "@/store";
+import Base from '../base';
+import getrandomNumber from '@/utils/getrandomNumber';
+import highTime from '@/utils/highTime';
+import { logReport } from '@/config';
+import { userInfoStore, windowOrs } from '@/store';
 import type {
   SessionInfosType,
   ViewAttrsType,
@@ -12,10 +12,10 @@ import type {
   LongTaskType,
   AttributesType,
   LongTaskLoadProcessType,
-} from "@/types/init";
-import { MonitorDestroyReason } from "@/types/lifecycle";
-import timeTranslate from "@/utils/timeTranslate";
-import { sdkLifeTimeEmitter } from "@/utils/mitt";
+} from '@/types/init';
+import { MonitorDestroyReason } from '@/types/lifecycle';
+import timeTranslate from '@/utils/timeTranslate';
+import { sdkLifeTimeEmitter } from '@/utils/mitt';
 
 interface PerformanceEntry {
   readonly duration: number;
@@ -44,9 +44,9 @@ export class LongTaskCollect extends Base {
   }
 
   private monitorDestroy() {
-    sdkLifeTimeEmitter.on("monitorDestroy", (reason: MonitorDestroyReason) => {
+    sdkLifeTimeEmitter.on('monitorDestroy', (reason: MonitorDestroyReason) => {
       switch (reason) {
-        case "sdk:teardown":
+        case 'sdk:teardown':
           this.destroyListenter();
           break;
         default:
@@ -55,10 +55,7 @@ export class LongTaskCollect extends Base {
     });
   }
   initLongAnimationFrameObserver() {
-    if (
-      !PerformanceObserver ||
-      !PerformanceObserver.supportedEntryTypes?.includes("long-animation-frame")
-    ) {
+    if (!PerformanceObserver || !PerformanceObserver.supportedEntryTypes?.includes('long-animation-frame')) {
       return;
     }
     this.longTaskObserver = new PerformanceObserver((list) => {
@@ -72,11 +69,11 @@ export class LongTaskCollect extends Base {
 
     try {
       this.longTaskObserver.observe({
-        type: "long-animation-frame",
+        type: 'long-animation-frame',
         buffered: true,
       });
     } catch (e) {
-      this.longTaskObserver.observe({ entryTypes: ["long-animation-frame"] });
+      this.longTaskObserver.observe({ entryTypes: ['long-animation-frame'] });
     }
   }
   // 销毁长任务监控
@@ -84,7 +81,7 @@ export class LongTaskCollect extends Base {
     try {
       this.longTaskObserver?.disconnect();
     } catch (error) {
-      logReport("destroyLongTaskListenter", error);
+      logReport('destroyLongTaskListenter', error);
     }
   }
   /**
@@ -97,28 +94,20 @@ export class LongTaskCollect extends Base {
       const name = entry?.name;
       const duration = timeTranslate(entry?.duration);
       const startTime = highTime(performance.timeOrigin + entry?.startTime);
-      const endTime = highTime(
-        performance.timeOrigin + entry?.startTime + entry?.duration,
-      );
+      const endTime = highTime(performance.timeOrigin + entry?.startTime + entry?.duration);
       const attributes = {} as AttributesType;
       const initialScript = entry.scripts[0];
-      const {
-        invoker,
-        invokerType,
-        sourceURL,
-        sourceFunctionName,
-        sourceCharPosition,
-      } = initialScript;
-      attributes["invoker"] = invoker;
-      attributes["invokerType"] = invokerType;
+      const { invoker, invokerType, sourceURL, sourceFunctionName, sourceCharPosition } = initialScript;
+      attributes['invoker'] = invoker;
+      attributes['invokerType'] = invokerType;
       if (sourceURL) {
-        attributes["sourceURL"] = sourceURL;
+        attributes['sourceURL'] = sourceURL;
       }
       if (sourceFunctionName) {
-        attributes["sourceFunctionName"] = sourceFunctionName;
+        attributes['sourceFunctionName'] = sourceFunctionName;
       }
       if (sourceCharPosition !== -1) {
-        attributes["sourceCharPosition"] = sourceCharPosition;
+        attributes['sourceCharPosition'] = sourceCharPosition;
       }
       const loadProcess: LongTaskLoadProcessType = {
         [entry?.name]: {
@@ -131,12 +120,12 @@ export class LongTaskCollect extends Base {
       const sessionInfo: SessionInfosType = this.getSessionInfo();
       const viewAttrs: ViewAttrsType = windowOrs.orsViewAttrs;
       const LongTaskEvent: LongTaskEventType = {
-        rumType: "ors_longtask",
+        rumType: 'ors_longtask',
         name,
         duration,
         loadProcess,
         attributes,
-        sessionType: "user",
+        sessionType: 'user',
         id: getrandomNumber(32),
         longtaskStartTime: startTime,
         longtaskEndTime: endTime,
@@ -150,7 +139,7 @@ export class LongTaskCollect extends Base {
       };
       this.reportData([collectData]);
     } catch (error) {
-      logReport("reportLongTask", error);
+      logReport('reportLongTask', error);
     }
   }
 }

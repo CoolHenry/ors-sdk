@@ -1,28 +1,20 @@
 /** ORS SDK 标识 */
-export const ORS_SDK_KEY = "ORS";
+export const ORS_SDK_KEY = 'ORS';
 
 /** Logger 标识 */
-export const ORS_SDK_LOGGER_KEY = ORS_SDK_KEY + "_Logger";
+export const ORS_SDK_LOGGER_KEY = ORS_SDK_KEY + '_Logger';
 
 /** Logger 标识 */
-export const ORS_ERROR_RETHROW = "_ors_error_rethrow_";
+export const ORS_ERROR_RETHROW = '_ors_error_rethrow_';
 
 /** WindowExposeIntegration 集成的挂载点 */
-export const ORS_WINDOW_EXPOSE_KEY = "_orsExpose";
+export const ORS_WINDOW_EXPOSE_KEY = '_orsExpose';
 
 /** ModuleMetadataIntegration 集成读取window数据的挂载点 */
-export const ORS_WINDOW_METADATA_KEY = "_orsModuleMetadata";
+export const ORS_WINDOW_METADATA_KEY = '_orsModuleMetadata';
 
 /** console 拦截方法 */
-export const CONSOLE_LEVEL = [
-  "log",
-  "info",
-  "warn",
-  "error",
-  "debug",
-  "assert",
-  "trace",
-] as const;
+export const CONSOLE_LEVEL = ['log', 'info', 'warn', 'error', 'debug', 'assert', 'trace'] as const;
 
 /** This may be mutated by the console instrumentation. */
 export const originalConsoleLevel: Partial<{
@@ -37,37 +29,37 @@ export const originalConsoleLevel: Partial<{
 
 // 浏览器 API 错误
 export const DEFAULT_EVENT_TARGET = [
-  "EventTarget",
-  "Window",
-  "Node",
-  "ApplicationCache",
-  "AudioTrackList",
-  "BroadcastChannel",
-  "ChannelMergerNode",
-  "CryptoOperation",
-  "EventSource",
-  "FileReader",
-  "HTMLUnknownElement",
-  "IDBDatabase",
-  "IDBRequest",
-  "IDBTransaction",
-  "KeyOperation",
-  "MediaController",
-  "MessagePort",
-  "ModalWindow",
-  "Notification",
-  "SVGElementInstance",
-  "Screen",
-  "SharedWorker",
-  "TextTrack",
-  "TextTrackCue",
-  "TextTrackList",
-  "WebSocket",
-  "WebSocketWorker",
-  "Worker",
-  "XMLHttpRequest",
-  "XMLHttpRequestEventTarget",
-  "XMLHttpRequestUpload",
+  'EventTarget',
+  'Window',
+  'Node',
+  'ApplicationCache',
+  'AudioTrackList',
+  'BroadcastChannel',
+  'ChannelMergerNode',
+  'CryptoOperation',
+  'EventSource',
+  'FileReader',
+  'HTMLUnknownElement',
+  'IDBDatabase',
+  'IDBRequest',
+  'IDBTransaction',
+  'KeyOperation',
+  'MediaController',
+  'MessagePort',
+  'ModalWindow',
+  'Notification',
+  'SVGElementInstance',
+  'Screen',
+  'SharedWorker',
+  'TextTrack',
+  'TextTrackCue',
+  'TextTrackList',
+  'WebSocket',
+  'WebSocketWorker',
+  'Worker',
+  'XMLHttpRequest',
+  'XMLHttpRequestEventTarget',
+  'XMLHttpRequestUpload',
 ];
 
 /**
@@ -78,84 +70,84 @@ export class ErrorCategoryEnum {
    * js 错误
    */
   static get JS_ERROR() {
-    return "js_error";
+    return 'js_error';
   }
 
   /**
    * 资源引用错误
    */
   static get RESOURCE_ERROR() {
-    return "resource_error";
+    return 'resource_error';
   }
 
   /**
    * Vue错误
    */
   static get VUE_ERROR() {
-    return "vue_error";
+    return 'vue_error';
   }
 
   /**
    * promise 错误
    */
   static get PROMISE_ERROR() {
-    return "promise_error";
+    return 'promise_error';
   }
 
   /**
    * ajax异步请求错误
    */
   static get AJAX_ERROR() {
-    return "ajax_error";
+    return 'ajax_error';
   }
 
   /**
    * 控制台错误console.info
    */
   static get CONSOLE_INFO() {
-    return "console_info";
+    return 'console_info';
   }
 
   /**
    * 控制台错误console.warn
    */
   static get CONSOLE_WARN() {
-    return "console_warn";
+    return 'console_warn';
   }
 
   /**
    * 控制台错误console.error
    */
   static get CONSOLE_ERROR() {
-    return "console_error";
+    return 'console_error';
   }
 
   /**
    * 跨域js错误
    */
   static get CROSS_SCRIPT_ERROR() {
-    return "cross_srcipt_error";
+    return 'cross_srcipt_error';
   }
 
   /**
    * 未知异常
    */
   static get UNKNOW_ERROR() {
-    return "unknow_error";
+    return 'unknow_error';
   }
 
   /**
    * 性能上报
    */
   static get PERFORMANCE() {
-    return "performance";
+    return 'performance';
   }
 
   /**
    * 网速上报
    */
   static get NETWORK_SPEED() {
-    return "network_speed";
+    return 'network_speed';
   }
 }
 
@@ -167,21 +159,21 @@ export class ErrorLevelEnum {
    * 错误信息
    */
   static get ERROR() {
-    return "Error";
+    return 'Error';
   }
 
   /**
    * 警告信息
    */
   static get WARN() {
-    return "Warning";
+    return 'Warning';
   }
 
   /**
    * 日志信息
    */
   static get INFO() {
-    return "Info";
+    return 'Info';
   }
 }
 
@@ -190,10 +182,10 @@ export class ErrorLevelEnum {
  */
 export class AjaxLibEnum {
   static get AXIOS() {
-    return "axios";
+    return 'axios';
   }
   static get DEFAULT() {
-    return "default";
+    return 'default';
   }
 }
 

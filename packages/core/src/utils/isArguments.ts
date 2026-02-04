@@ -29,7 +29,7 @@ export default function isArguments(
     | Set<unknown>
     | Promise<unknown>
     | null
-    | undefined,
+    | undefined
 ) {
-  return !!(arg && hasOwnProperty.call(arg, "callee"));
+  return !!(arg && hasOwnProperty.call(arg, 'callee'));
 }

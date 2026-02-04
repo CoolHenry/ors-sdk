@@ -1,16 +1,48 @@
 {
-  "compilerOptions": {
-    "target": "es2018",
-    "module": "commonjs",
-    "lib": ["es2018", "dom"],
-    "declaration": true,
-    "outDir": "./dist",
-    "strict": true,
-    "esModuleInterop": true,
-    "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
-    "jsx": "react-jsx"
-  },
-  "include": ["src"],
-  "exclude": ["node_modules"]
+    "compilerOptions": {
+        "jsx": "react",
+        "types": [
+            "react",
+            "jest",
+            "node"
+        ],
+        "rootDir": "src", // 源码根目录
+        "target": "ESNext",
+        "declaration": false,
+        "emitDeclarationOnly": false, // 只生成类型
+        "useDefineForClassFields": true,
+        "module": "ESNext",
+        "lib": [
+            "ESNext",
+            "DOM"
+        ],
+        "moduleResolution": "bundler",
+        "strict": true,
+        "skipLibCheck": true,
+        "sourceMap": true,
+        "resolveJsonModule": true,
+        "esModuleInterop": true,
+        "noEmit": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "noImplicitReturns": true,
+        "forceConsistentCasingInFileNames": true,
+        "paths": {
+            "@/*": [
+                "./src/*"
+            ]
+        }
+    },
+    "exclude": [
+        "**/*.test.ts",
+        "node_modules",
+        "test/**",
+        ".history/**",
+        "lib/**",
+        "example/**",
+        "dist/**"
+    ],
+    "include": [
+        "src/**/*"
+    ]
 }

@@ -1,26 +1,20 @@
-import Base from "../base";
-import { onCLS, onINP, onFID, onLCP, onTTFB, onFCP } from "web-vitals";
-import timeTranslate from "@/utils/timeTranslate";
-import { onFP, onNavigation, htmlTreeAsString } from "@/utils";
-import { windowOrs } from "@/store";
-import { logReport } from "@/config";
-import type {
-  PageLoadVitalsData,
-  NavigationVitalsData,
-  PerformanceInitParams,
-  ObservePerformanceOptions,
-  VitalsName,
-} from "@/types/performance";
-import { MonitorDestroyReason } from "@/types/lifecycle";
-import { Logger } from "@/utils/common";
-import { PerformanceManagement } from "./management";
-import { getViewInfo } from "@/store/viewInfoStore";
-import { sdkLifeTimeEmitter } from "@/utils/mitt";
+import Base from '../base';
+import { onCLS, onINP, onFID, onLCP, onTTFB, onFCP } from 'web-vitals';
+import timeTranslate from '@/utils/timeTranslate';
+import { onFP, onNavigation, htmlTreeAsString } from '@/utils';
+import { windowOrs } from '@/store';
+import { logReport } from '@/config';
+import type { PageLoadVitalsData, NavigationVitalsData, PerformanceInitParams, ObservePerformanceOptions, VitalsName } from '@/types/performance';
+import { MonitorDestroyReason } from '@/types/lifecycle';
+import { Logger } from '@/utils/common';
+import { PerformanceManagement } from './management';
+import { getViewInfo } from '@/store/viewInfoStore';
+import { sdkLifeTimeEmitter } from '@/utils/mitt';
 
 export default class PerformanceCollect extends Base {
-  pageType: PerformanceInitParams["pageType"];
-  viewId: PerformanceInitParams["viewId"];
-  projectConfig: PerformanceInitParams["projectConfig"];
+  pageType: PerformanceInitParams['pageType'];
+  viewId: PerformanceInitParams['viewId'];
+  projectConfig: PerformanceInitParams['projectConfig'];
   navigationVitalsData: NavigationVitalsData;
   pageLoadVitalsData: PageLoadVitalsData;
   //当前这个性能指标监控是否未卸载
@@ -71,9 +65,9 @@ export default class PerformanceCollect extends Base {
     this.monitorDestroy();
   }
   private monitorDestroy() {
-    sdkLifeTimeEmitter.on("monitorDestroy", (reason: MonitorDestroyReason) => {
+    sdkLifeTimeEmitter.on('monitorDestroy', (reason: MonitorDestroyReason) => {
       switch (reason) {
-        case "sdk:teardown":
+        case 'sdk:teardown':
           this.innerDisconnect();
           break;
         default:
@@ -84,28 +78,23 @@ export default class PerformanceCollect extends Base {
   //获取页面加载指标
   public getMetrics() {
     try {
-      if (this.pageType === "pageload") {
+      if (this.pageType === 'pageload') {
         this.pageLoadVitalsData.perfromanceTimeOrigin = performance.timeOrigin;
-        this.pageLoadVitalsData.navigationTiming =
-          window.performance?.getEntriesByType("navigation")?.[0];
+        this.pageLoadVitalsData.navigationTiming = window.performance?.getEntriesByType('navigation')?.[0];
         this.pageLoadVitalsData.perfromanceTiming = performance.timing;
         return this.pageLoadVitalsData;
       }
       return this.navigationVitalsData;
     } catch (error) {
-      logReport("getPageloadMetrics", error);
+      logReport('getPageloadMetrics', error);
       return {};
     }
   }
   private checkIsNavigationMeticsKey(name: string) {
-    return ["FID", "CLS", "INP"].includes(name);
+    return ['FID', 'CLS', 'INP'].includes(name);
   }
   // 监听web-vitails数据回调
-  private observeVitals = (options: {
-    [x: string]: any;
-    name: string;
-    value: number | string | null;
-  }): any => {
+  private observeVitals = (options: { [x: string]: any; name: string; value: number | string | null }): any => {
     try {
       if (!this._isConnected) {
         return;
@@ -117,42 +106,27 @@ export default class PerformanceCollect extends Base {
         return;
       }
 
-      const vitalsStartTime =
-        performance.timeOrigin + options?.entries?.[0]?.startTime;
+      const vitalsStartTime = performance.timeOrigin + options?.entries?.[0]?.startTime;
       const vitalsStartTimeNs = vitalsStartTime * 1000 * 1000;
       if (vitalsStartTime && this.checkIsNavigationMeticsKey(name)) {
         if (this._listenEndTime && vitalsStartTimeNs > this._listenEndTime) {
           return;
         }
-        if (
-          this._listenStartTime &&
-          vitalsStartTimeNs < this._listenStartTime
-        ) {
+        if (this._listenStartTime && vitalsStartTimeNs < this._listenStartTime) {
           return;
         }
       }
       if (options && name) {
-        Logger.log("[log][webVitals]:", options, name, value);
-        const allowedNames = [
-          "FP",
-          "FCP",
-          "LCP",
-          "INP",
-          "FID",
-          "CLS",
-          "TTFB",
-        ] as VitalsName[];
+        Logger.log('[log][webVitals]:', options, name, value);
+        const allowedNames = ['FP', 'FCP', 'LCP', 'INP', 'FID', 'CLS', 'TTFB'] as VitalsName[];
         // cls行业基线是<0.1。质量分不做转换
         const optionsValue = allowedNames.includes(name)
-          ? name === "CLS"
+          ? name === 'CLS'
             ? parseFloat(Number(value).toFixed(2))
             : timeTranslate(Number(value))
           : value;
         //更新指标对象
-        const baseObj =
-          this.pageType === "navigation"
-            ? this.navigationVitalsData
-            : this.pageLoadVitalsData;
+        const baseObj = this.pageType === 'navigation' ? this.navigationVitalsData : this.pageLoadVitalsData;
         (baseObj as Record<string, any>)[name] = optionsValue;
 
         //获取LCP，INP元素
@@ -173,7 +147,7 @@ export default class PerformanceCollect extends Base {
         }
       }
     } catch (error) {
-      logReport("observeVitals", error);
+      logReport('observeVitals', error);
     }
   };
 
@@ -182,15 +156,15 @@ export default class PerformanceCollect extends Base {
     try {
       if (!options?.entries) return;
 
-      if (options.name === "LCP") {
+      if (options.name === 'LCP') {
         this.extractLCPInfo(options, targetMetrics);
-      } else if (options.name === "INP") {
+      } else if (options.name === 'INP') {
         this.extractINPInfo(options, targetMetrics);
-      } else if (options.name === "CLS") {
+      } else if (options.name === 'CLS') {
         this.extractCLSInfo(options, targetMetrics);
       }
     } catch (error) {
-      logReport("getSelector", error);
+      logReport('getSelector', error);
     }
   };
 
@@ -223,7 +197,7 @@ export default class PerformanceCollect extends Base {
       }
       targetMetrics.lcpSize = entry?.size;
     } catch (e) {
-      logReport("extractLCPInfo", e);
+      logReport('extractLCPInfo', e);
     }
   };
 
@@ -254,7 +228,7 @@ export default class PerformanceCollect extends Base {
         targetMetrics.inpTextSnippet = target.innerText?.slice(0, 50) || null;
       }
     } catch (e) {
-      logReport("extractINPInfo", e);
+      logReport('extractINPInfo', e);
     }
   };
 
@@ -267,19 +241,17 @@ export default class PerformanceCollect extends Base {
       const _clsEntry = entries[0]; // 通常取第一个用户交互
       // Only add CLS attributes if CLS is being recorded on the pageload span
       if (_clsEntry?.sources) {
-        const clsSource = _clsEntry.sources
-          .map((source: { node: unknown }) => htmlTreeAsString(source.node))
-          ?.join(",");
+        const clsSource = _clsEntry.sources.map((source: { node: unknown }) => htmlTreeAsString(source.node))?.join(',');
         targetMetrics.clsSource = clsSource;
       }
     } catch (e) {
-      logReport("extractCLSInfo", e);
+      logReport('extractCLSInfo', e);
     }
   };
 
   observePerformance = ({ viewStartTime }: ObservePerformanceOptions = {}) => {
     try {
-      if (this.pageType === "pageload") {
+      if (this.pageType === 'pageload') {
         const fpObserver = onFP(this.observeVitals);
         const navigationObserver = onNavigation(this.observeVitals);
         if (fpObserver) {
@@ -295,7 +267,7 @@ export default class PerformanceCollect extends Base {
         onCLS(this.observeVitals, { reportAllChanges: true });
         onINP(this.observeVitals, { reportAllChanges: true });
       }
-      if (this.pageType === "navigation") {
+      if (this.pageType === 'navigation') {
         //navigation才区分上报到哪个页面
         if (viewStartTime) {
           this._listenStartTime = viewStartTime;
@@ -305,7 +277,7 @@ export default class PerformanceCollect extends Base {
         onINP(this.observeVitals, { reportAllChanges: true });
       }
     } catch (error) {
-      logReport("observePerformance", error);
+      logReport('observePerformance', error);
     }
   };
 
@@ -315,7 +287,7 @@ export default class PerformanceCollect extends Base {
       this._isConnected = false;
       if (this._observeList) {
         this._observeList.forEach((item) => {
-          if (item && typeof item.disconnect === "function") {
+          if (item && typeof item.disconnect === 'function') {
             item.disconnect();
           }
         });
@@ -323,7 +295,7 @@ export default class PerformanceCollect extends Base {
       const performanceMgn = PerformanceManagement.getInstance();
       performanceMgn.removePerformanceCollect(this);
     } catch (err) {
-      logReport("Performance innerDisconnect", err);
+      logReport('Performance innerDisconnect', err);
     }
   }
 
@@ -334,18 +306,18 @@ export default class PerformanceCollect extends Base {
       }
       //navigation才区分    上报到哪个页面
       this._listenEndTime = endTime;
-      if (this.pageType === "pageload") {
+      if (this.pageType === 'pageload') {
         this._disconnectTimer = setTimeout(() => {
           this.innerDisconnect();
         }, 5000);
       }
-      if (this.pageType === "navigation") {
+      if (this.pageType === 'navigation') {
         this._disconnectTimer = setTimeout(() => {
           this.innerDisconnect();
         }, 500);
       }
     } catch (err) {
-      logReport("Performance disconnect", err);
+      logReport('Performance disconnect', err);
     }
   }
 }

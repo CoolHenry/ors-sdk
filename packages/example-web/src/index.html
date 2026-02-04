@@ -1,32 +1,210 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ORS SDK Example</title>
-</head>
-<body>
-  <h1>ORS SDK Example</h1>
-  <button id="captureError">Capture Error</button>
-  <button id="captureMessage">Capture Message</button>
-  <div id="output"></div>
-
-  <script src="./dist/index.js"></script>
-  <script>
-    document.getElementById('captureError').addEventListener('click', () => {
-      try {
-        throw new Error('This is a test error from example-web');
-      } catch (error) {
-        orsSdk.captureException(error, { context: 'example-web' });
-      }
-    });
-
-    document.getElementById('captureMessage').addEventListener('click', () => {
-      orsSdk.captureMessage('This is a test message from example-web', { 
-        context: 'example-web',
-        level: 'info'
-      });
-    });
-  </script>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="referrer" content="no-referrer" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <link rel="stylesheet" href="./css/index.css" />
+    <script src="./js/sentry.10.30.0.js" crossorigin="anonymous"></script>
+    <!-- <script src="./js/sentry.7.36.0.js" crossorigin="anonymous"></script> -->
+    <!-- <script src="./js/sentry.trace.7.36.0.js" crossorigin="anonymous"></script> -->
+    <!-- <script src="./js/vconsole.min.js"></script> -->
+    <script src="./js/axios.min.js"></script>
+    <script src="https://cdn.example.com/external-script.js"></script>
+    <!-- <script crossorigin="anonymous" src="https://code.jquery.com/jquery-3.6.0.min.js"></script> -->
+    <script src="./js/apmPlus.js"></script>
+    <!-- <link rel="stylesheet" href="aaaccc.css" /> -->
+    <script src="index555.js"></script>
+    <script src="./ors/index.umd.js"></script>
+    <script type="module" src="./main.js"></script>
+    <script type="module" src="./trace.js"></script>
+    <script>
+      //   window.demo.loadScript('https://cdn.example.com/external-script-eventBeforeInitSdk.js');
+      //   window.demo.loadScript('./js/apmPlus.js');
+      //   [1, 2].forEach((e) => {
+      //     window.demo.handleNetwork('http://172.17.50.20:3002', 'POST', { project: `ors${e}`, type: 'eventBeforeInitSdk' });
+      //   });
+      //   setTimeout(() => {
+      //     throw new Error('eventBeforeInitSdk-browwer-api: timeout error');
+      //   });
+      //   //   var vConsole = new VConsole();
+      //   throw new Error('eventBeforeInitSdk error');
+    </script>
+  </head>
+  <body>
+    <div id="app" _ts="_ts">
+      <h3>白屏检测触发时机</h3>
+      <p>1. 页面有错误时会触发白屏检测</p>
+      <p>2. 失败加载资源时会触发白屏检测</p>
+      <p>3. 请求失败时会触发白屏检测</p>
+      <p>4. 页面路由有变化时会触发白屏检测</p>
+      <p>请打开开发者工具查看 console</p>
+      <a href="#aaa" target="_blank">白屏检测-跳转到新的路由aaa</a> <br />
+      <a href="#bbb">白屏检测-跳转到新的路由bbb</a> <br />
+      <a href="#ccc">白屏检测-跳转到新的路由ccc</a> <br />
+      <a href="#ddd">白屏检测-跳转到新的路由ddd</a> <br />
+      <a href="#eee">白屏检测-跳转到新的路由eee</a> <br />
+      <a href="#fff">白屏检测-跳转到新的路由fff</a> <br />
+      <a href="#ggg">白屏检测-跳转到新的路由ggg</a> <br />
+      <a href="#hhh">白屏检测-跳转到新的路由hhh</a> <br />
+      <a href="#iii">白屏检测-跳转到新的路由iii</a> <br />
+      <a href="#jjj">白屏检测-跳转到新的路由jjj</a> <br />
+      <a href="#kkk">白屏检测-跳转到新的路由kkk</a> <br />
+      <a href="#lll">白屏检测-跳转到新的路由lll</a> <br />
+      <div>
+        <img
+          src="http://upload-images.jianshu.io/upload_images/8629008-402e6e03548b941f.png?imageMogr2/auto-orient/strip|imageView2/2/w/639/format.webp"
+          alt=""
+        />
+        <img
+          style="display: none"
+          src=" 
+https://static-002-gtm.msxf.com/market/adadpservice/fileServer/image/adMaterialMatter/537aff0efbdd4973a4a2bdab78a50aff.webp"
+          alt=""
+        />
+      </div>
+    </div>
+    <div class="moni">
+      <div class="moni-sec">
+        <p class="moni-title">JS错误</p>
+        <p class="moni-subtitle">普通错误</p>
+        <button class="jsError" onclick="demo.handleJsError()">白屏检测点击出一次JS的错误</button>
+        <button class="jsError2" onclick="demo.handleJsError2()">点击出一次JS的错误</button>
+        <button class="jsError" onclick="demo.handlePromiseError('字符串promise错误')">抛出字符串的promise错误</button>
+        <p class="moni-subtitle">浏览器API回调错误</p>
+        <button class="jsError" onclick="demo.handleBrowserApiError('setTimeout')">setTimeout</button>
+        <button class="jsError" onclick="demo.handleBrowserApiError('setInterval')">setInterval</button>
+        <button class="jsError" onclick="demo.handleBrowserApiError('requestAnimationFrame')">requestAnimationFrame</button>
+        <button class="jsError" onclick="demo.handleBrowserApiError('xhrOnload')">xhrOnload</button>
+        <button id="jsErrorAddEventListener" class="jsError" onclick="demo.handleBrowserApiError('addEventListener')">addEventListener</button>
+        <button id="jsErrorHandleEvent" class="jsError" onclick="demo.handleBrowserApiError('handleEvent')">handleEvent</button>
+        <p class="moni-subtitle">错误日志上报</p>
+        <button class="jsErrorReport" onclick="demo.handleJsErrorReport()">错误日志上报</button>
+        <p class="moni-subtitle">主动上报异常</p>
+        <select id="manualError-sel" name="select">
+          <option value="" selected disabled>请选择</option>
+          <option value="Error">Error</option>
+          <option value="String">String</option>
+          <option value="Number">Number</option>
+          <option value="Boolean">Boolean</option>
+          <option value="Object">Object</option>
+          tion>
+          <option value="Proxy">Proxy</option>
+        </select>
+        <button class="jsErrorReport" onclick="demo.orsCaptureException()">ORS主动上报异常captureException</button>
+        <button class="jsErrorReport" onclick="demo.orsCaptureMessage()">ORS主动上报异常captureMessage</button>
+        <button class="jsErrorReport" onclick="demo.sentryCaptureException()">Sentry主动上报异常captureException</button>
+        <button class="jsErrorReport" onclick="demo.sentryCaptureMessage()">Sentry主动上报异常captureMessage</button>
+      </div>
+      <div class="moni-sec">
+        <p class="moni-title">资源加载类</p>
+        <p class="moni-subtitle">加载资源失败</p>
+        <button class="resErrorReport" onclick="demo.handleResErrorReport()">白屏检测-加载一次的失败资源</button>
+        <button class="resErrorReport" onclick="demo.handleCorsErrorReport()">白屏检测-加载一次的跨域资源</button>
+        <p class="moni-subtitle">动态加载一个静态资源</p>
+        <button onclick="demo.handleGetStatic()">点击请求</button>
+        <p class="moni-subtitle">动态加载图片</p>
+        <button class="jsError3" onclick="demo.handleJsError3()">动态加载一张图片</button>
+        <button class="jsError3" onclick="demo.handleJsError4()">同域-动态加载一张404图片</button>
+        <button class="jsError3" onclick="demo.handleJsError6()">跨域-动态加载一张404图片</button>
+        <button class="jsError5" onclick="demo.handleJsError5()">点击调取jsBridge的方法</button>
+      </div>
+      <div class="moni-sec">
+        <p class="moni-title">网络请求类</p>
+        <p class="moni-subtitle">成功请求</p>
+        <button class="network" onclick="demo.handleNetwork('http://172.17.50.20:3001/status/200','GET',{ project: 'ors3', type: 'normal' })">
+          网络请求XHR GET 200请求
+        </button>
+        <button class="network" onclick="demo.handleNetwork('http://172.17.50.20:3001/status/200','POST',{ project: 'ors4', type: 'normal' })">
+          网络请求XHR POST 200请求
+        </button>
+        <button class="network" onclick="demo.handleNetwork('http://172.17.50.20:3001/status/200','GET',{ project: 'ors3', type: 'normal' },'fetch')">
+          网络请求fetch GET 200请求
+        </button>
+        <button
+          class="network"
+          onclick="demo.handleNetwork('http://172.17.50.20:3001/status/200','POST',{ project: 'ors4', type: 'normal' },'fetch')"
+        >
+          网络请求fetch POST 200请求
+        </button>
+        <p class="moni-subtitle">失败请求</p>
+        <button class="btn" onclick="demo.handleNetwork('http://172.17.50.20:3001/status/400','POST',{ project: 'ors4', type: 'normal' })">
+          网络请求XHR 400请求
+        </button>
+        <button class="btn" onclick="demo.handleNetwork('http://172.17.50.20:3001/status/502','POST',{ project: 'ors4', type: 'normal' })">
+          网络请求XHR 502请求
+        </button>
+        <button class="btn" onclick="demo.handleNetwork('http://172.17.50.20:3001/status/404','POST',{ project: 'ors4', type: 'normal' },'fetch')">
+          网络请求fetch 404请求
+        </button>
+        <button class="btn" onclick="demo.handleNetwork('http://172.17.50.20:3001/status/401','POST',{ project: 'ors4', type: 'normal' },'fetch')">
+          网络请求fetch 401请求
+        </button>
+        <button onclick="demo.handleRedictDuration()">重定向 302请求</button>
+        <button class="networkError" onclick="demo.handleNetworkError()">白屏检测 请求错误错误（GET请求）</button>
+        <button class="networkErrorPost" onclick="demo.handleNetworkErrorPost()">白屏检测 请求错误错误（POST请求）</button>
+        <p class="moni-subtitle">验证静态资源第二次访问<br />304缓存取不到资源大小</p>
+        <button onclick="demo.handleRetryStatic()">发送</button>
+        <p class="moni-subtitle">跨域请求</p>
+        <button onclick="demo.handleNetwork('http://172.17.50.20:3001/status/cross-domain','POST',{ project: 'ors4', type: 'normal' },'fetch')">
+          发送
+        </button>
+        <!-- <p class="moni-subtitle">https请求</p>
+        <button onclick="demo.handleSendHttps()">发送</button> -->
+      </div>
+      <div class="moni-sec">
+        <p class="moni-title">性能指标</p>
+        <button>FID：<input type="text" /></button>
+        <button onclick="demo.handleLongTask()">触发长任务</button>
+        <div style="width: 100px; height: 100px; background-color: red" id="cls">CLS</div>
+      </div>
+      <div class="moni-sec">
+        <p class="moni-title">日志</p>
+        <select id="log-sel" name="select">
+          <option value="" selected disabled>请选择</option>
+          <option value="Error">Error</option>
+          <option value="String">String</option>
+          <option value="Number">Number</option>
+          <option value="Boolean">Boolean</option>
+          <option value="Node">Node</option>
+          <option value="Event">Event</option>
+          <option value="Function">Function</option>
+          <option value="Promise">Promise</option>
+          <option value="Map">Map</option>
+          <option value="Set">Set</option>
+          <option value="WeakMap">WeakMap</option>
+          <option value="WeakSet">WeakSet</option>
+          <option value="Window">Window</option>
+          <option value="Documnent">Documnent</option>
+          <option value="Proxy">Proxy</option>
+        </select>
+        <button onclick="demo.handleConsole('log',window)">log 大对象window 序列化爆炸</button>
+        <button onclick="demo.handleConsole('log')">log</button>
+        <button onclick="demo.handleConsole('info')">info</button>
+        <button onclick="demo.handleConsole('warn')">warn</button>
+        <button onclick="demo.handleConsole('error')">error</button>
+        <button onclick="demo.handleConsole('debug')">debug</button>
+        <button onclick="demo.handleConsole('assert')">assert</button>
+        <button onclick="demo.handleConsole('trace')">trace</button>
+      </div>
+      <div class="moni-sec">
+        <p class="moni-title">其它</p>
+        <p class="moni-subtitle">自定义标签</p>
+        <textarea id="customerTagTextarea" rows="5" cols="20" placeholder="请输入自定义标签"></textarea>
+        <button id="customerTagReport" class="btn" onclick="demo.handleCustomerTagReport()">自定义标签更改</button>
+        <p class="moni-subtitle">模拟上报完成前关闭页面</p>
+        <button onclick="demo.simulateUnload()">模拟关闭页面</button>
+        <p class="moni-subtitle">更新config配置</p>
+        <button onclick="demo.updateSDKConfig()">更新</button>
+        <p class="moni-subtitle">setExtra</p>
+        <button onclick="demo.setExtra('Sentry')">Sentry setExtra</button>
+        <button onclick="demo.setExtra('ORS')">ORS setExtra</button>
+      </div>
+    </div>
+    <img src="aaaa.png" alt="" />
+    <div class="white"></div>
+    <div class="networkLog"></div>
+  </body>
 </html>

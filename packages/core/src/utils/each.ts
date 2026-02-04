@@ -1,12 +1,8 @@
-import { isArray } from "./isType";
+import { isArray } from './isType';
 
 const nativeForEach = Array.prototype.forEach;
 const hasOwnProperty = Object.prototype.hasOwnProperty;
-type IteratorCallback = (
-  value: any,
-  index: number | string,
-  source: object | any[],
-) => void;
+type IteratorCallback = (value: any, index: number | string, source: object | any[]) => void;
 
 /** 迭代器回调
  * @callback iteratorCallback
@@ -29,19 +25,11 @@ type IteratorCallback = (
  * //3,2,[1, 2, 3]
  *
  */
-export default function each(
-  obj: object | any[],
-  iterator: IteratorCallback,
-  context?: any,
-) {
+export default function each(obj: object | any[], iterator: IteratorCallback, context?: any) {
   if (obj == null) {
     return false;
   }
-  if (
-    isArray(obj) &&
-    nativeForEach &&
-    (obj as any[]).forEach === nativeForEach
-  ) {
+  if (isArray(obj) && nativeForEach && (obj as any[]).forEach === nativeForEach) {
     (obj as any[]).forEach(iterator, context);
   } else if (isArray(obj)) {
     for (let i = 0, l = (obj as any[]).length; i < l; i++) {

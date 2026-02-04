@@ -1,0 +1,18 @@
+{
+    "mode": "pre",
+    "tag": "beta",
+    "initialVersions": {
+        "@ors-sdk/web": "1.3.6",
+        "example-web": "1.1.1",
+        "@ors-sdk/react": "1.3.6",
+        "@ors-sdk/vue": "1.3.6"
+    },
+    "changesets": [
+        "cruel-views-help",
+        "dull-eagles-shop",
+        "huge-chefs-happen",
+        "light-tires-fold",
+        "silly-readers-play",
+        "slimy-radios-trade"
+    ]
+}

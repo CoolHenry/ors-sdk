@@ -6,7 +6,7 @@
  * @returns string Encoded
  */
 export function truncate(str: string, max = 0): string {
-  if (typeof str !== "string" || max === 0) {
+  if (typeof str !== 'string' || max === 0) {
     return str;
   }
   return str.length <= max ? str : `${str.slice(0, max)}...`;

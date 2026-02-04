@@ -1,6 +1,6 @@
-import { sdkIntegrationEmitter, sdkLifeTimeEmitter } from "@/utils/mitt";
-import { SessionParams } from "./init";
-import { WindowOrsType } from "./windowOrs";
+import { sdkIntegrationEmitter, sdkLifeTimeEmitter } from '@/utils/mitt';
+import { SessionParams } from './init';
+import { WindowOrsType } from './windowOrs';
 
 export type OrsIntegrationType = {
   /** integration的名称，用于追踪报错信息 */

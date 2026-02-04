@@ -1,21 +1,23 @@
 {
-  "name": "@ors-sdk/example-web",
-  "version": "0.1.0",
-  "description": "Example web application using the ORS SDK",
-  "main": "dist/index.js",
-  "scripts": {
-    "build": "webpack",
-    "dev": "webpack serve",
-    "start": "serve dist"
-  },
-  "dependencies": {
-    "@ors-sdk/core": "^0.1.0"
-  },
-  "keywords": [
-    "example",
-    "web",
-    "sentry"
-  ],
-  "author": "",
-  "license": "MIT"
+    "name": "example-web",
+    "private": true,
+    "version": "1.1.1",
+    "description": "example-web pure js",
+    "scripts": {
+        "dev": "nodemon --signal SIGTERM server.js",
+        "build": "vite build"
+    },
+    "engines": {
+        "node": ">=16.19.0"
+    },
+    "dependencies": {
+        "@ors-sdk/web": "workspace:*",
+        "express": "^5.1.0",
+        "opener": "1.5.2",
+        "vite": "^7.3.1"
+    },
+    "devDependencies": {
+        "nodemon": "^3.1.10"
+    },
+    "packageManager": "pnpm@10.11.0"
 }

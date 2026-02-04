@@ -1,42 +1,25 @@
-import { ResourceCollect } from "@/collect/resource";
-import { RequestCollect } from "@/collect/request";
-import ActionCollect from "@/collect/action";
-import ConsoleCollect from "@/collect/console";
-import {
-  PromiseError,
-  ResourceError,
-  BrowserApiError,
-  CaptureError,
-} from "@/collect/error";
-import { LongTaskCollect } from "@/collect/longTask";
-import ViewCollect from "@/collect/view";
-import timeTranslate from "@/utils/timeTranslate";
-import {
-  generateOrGetSessionId,
-  getSessionParams,
-} from "@/utils/sessionCalculate";
-import {
-  SamplingManager,
-  logReport,
-  initConfigData,
-  initConfig,
-} from "@/config";
-import type {
-  SessionParams,
-  initObserveParams,
-  initSubAppParams,
-} from "@/types/init";
-import browserSupport from "@/utils/browserSupport";
-import { getBridgeData } from "@/utils/getJsBridgeData";
-import { initUnloadListener } from "@/utils";
-import { windowOrs } from "@/store/windowOrs";
-import "@/utils/performancePolyfill"; // performance polyfill
-import { sdkLifeTimeEmitter } from "@/utils/mitt";
-import { OrsIntegrationSetupParams } from "./types/integrations";
-import { ORS_WINDOW_EXPOSE_KEY } from "./constant";
-import { Logger } from "@/utils/common";
-import PerformanceCollect from "@/collect/performance";
-import { integrationManager } from "@/integrations/utils";
+import { ResourceCollect } from '@/collect/resource';
+import { RequestCollect } from '@/collect/request';
+import ActionCollect from '@/collect/action';
+import ConsoleCollect from '@/collect/console';
+import { PromiseError, ResourceError, BrowserApiError, CaptureError } from '@/collect/error';
+import { LongTaskCollect } from '@/collect/longTask';
+import ViewCollect from '@/collect/view';
+import timeTranslate from '@/utils/timeTranslate';
+import { generateOrGetSessionId, getSessionParams } from '@/utils/sessionCalculate';
+import { SamplingManager, logReport, initConfigData, initConfig } from '@/config';
+import type { SessionParams, initObserveParams, initSubAppParams } from '@/types/init';
+import browserSupport from '@/utils/browserSupport';
+import { getBridgeData } from '@/utils/getJsBridgeData';
+import { initUnloadListener } from '@/utils';
+import { windowOrs } from '@/store/windowOrs';
+import '@/utils/performancePolyfill'; // performance polyfill
+import { sdkLifeTimeEmitter } from '@/utils/mitt';
+import { OrsIntegrationSetupParams } from './types/integrations';
+import { ORS_WINDOW_EXPOSE_KEY } from './constant';
+import { Logger } from '@/utils/common';
+import PerformanceCollect from '@/collect/performance';
+import { integrationManager } from '@/integrations/utils';
 
 let viewCollect: ViewCollect | null = null;
 
@@ -73,7 +56,7 @@ export const initObserve = async (params: initObserveParams) => {
 
     //performacen observer性能指标采集
     performanceCollect = new PerformanceCollect({
-      pageType: "pageload",
+      pageType: 'pageload',
       viewId: windowOrs.orsViewAttrs.viewId,
       projectConfig: sessionParams,
     });
@@ -82,9 +65,7 @@ export const initObserve = async (params: initObserveParams) => {
      * js错误采集
      */
     //全局错误
-    const resourceErrorCollect: ResourceError = new ResourceError(
-      sessionParams,
-    );
+    const resourceErrorCollect: ResourceError = new ResourceError(sessionParams);
     resourceErrorCollect && resourceErrorCollect.openWhiteScreenMonitor();
     // browserApi回调错误
     new BrowserApiError(sessionParams);
@@ -101,7 +82,7 @@ export const initObserve = async (params: initObserveParams) => {
     windowOrs.CaptureError = CaptureError.getInstance(sessionParams);
 
     //初始化通信采集错误
-    sdkLifeTimeEmitter.emit("matchJsErrorSampling", sessionParams);
+    sdkLifeTimeEmitter.emit('matchJsErrorSampling', sessionParams);
 
     /**
      * 请求采集
@@ -112,8 +93,7 @@ export const initObserve = async (params: initObserveParams) => {
     /**
      * 资源采集
      */
-    const resourceCollect: ResourceCollect =
-      ResourceCollect.getInstance(sessionParams);
+    const resourceCollect: ResourceCollect = ResourceCollect.getInstance(sessionParams);
     resourceCollect?.initMonitor();
 
     /**
@@ -125,13 +105,11 @@ export const initObserve = async (params: initObserveParams) => {
     /**
      * console日志采集
      */
-    const consoleCollect: ConsoleCollect | null = new ConsoleCollect(
-      sessionParams,
-    );
+    const consoleCollect: ConsoleCollect | null = new ConsoleCollect(sessionParams);
     consoleCollect && consoleCollect.initConsole();
 
     //初始化采集通信
-    sdkLifeTimeEmitter.emit("initCollect", sessionParams);
+    sdkLifeTimeEmitter.emit('initCollect', sessionParams);
 
     // 初始化配置参数
     await initConfig(params);
@@ -139,32 +117,32 @@ export const initObserve = async (params: initObserveParams) => {
     // 是否执行初始化
     let isInit = false;
 
-    window.addEventListener("load", async () => {
+    window.addEventListener('load', async () => {
       try {
         if (isInit) return;
         // 页面信息初始化放到最前,防止错误上报的时候不带view信息
-        Logger.log("[log][addEventListenerLoad]");
+        Logger.log('[log][addEventListenerLoad]');
         isInit = true;
         await initMonitor(sessionParams);
       } catch (error) {
-        logReport("initMonitorLoad", error);
+        logReport('initMonitorLoad', error);
       }
     });
-    if (!isInit && document.readyState === "complete") {
-      Logger.log("[log][complete]");
+    if (!isInit && document.readyState === 'complete') {
+      Logger.log('[log][complete]');
       isInit = true;
       await initMonitor(sessionParams);
     }
   } catch (error) {
-    logReport("initObserve", error);
+    logReport('initObserve', error);
   }
 };
 
 // 初始化监控类
 const initMonitor = async (sessionParams: SessionParams) => {
   try {
-    sdkLifeTimeEmitter.emit("beforeInitMonitor", sessionParams);
-    const isRate = SamplingManager.decide({ rumType: "ors_view" }) === "report";
+    sdkLifeTimeEmitter.emit('beforeInitMonitor', sessionParams);
+    const isRate = SamplingManager.decide({ rumType: 'ors_view' }) === 'report';
     if (isRate) {
       if (performanceCollect) {
         performanceCollect.observePerformance();
@@ -175,14 +153,14 @@ const initMonitor = async (sessionParams: SessionParams) => {
     }
 
     windowOrs.isInit = true;
-    sdkLifeTimeEmitter.emit("initObserveFinished", windowOrs);
+    sdkLifeTimeEmitter.emit('initObserveFinished', windowOrs);
     // 初始化监听页面卸载事件
     setTimeout(() => {
       // 监听页面卸载事件
       initUnloadListener(sessionParams);
     }, 3 * 1000);
   } catch (error) {
-    logReport("initMonitor", error);
+    logReport('initMonitor', error);
   }
 };
 
@@ -202,13 +180,13 @@ const initMonitor = async (sessionParams: SessionParams) => {
 //   }
 // };
 export const recordFMPTime = (type: string) => {
-  if (type === "FMP" && windowOrs.isInit) {
+  if (type === 'FMP' && windowOrs.isInit) {
     windowOrs.orsViewPage.FMP = timeTranslate(performance.now());
     setTimeout(() => {
       try {
         viewCollect && viewCollect.reportData([windowOrs.orsViewPage]);
       } catch (error) {
-        logReport("getNowTime", error);
+        logReport('getNowTime', error);
       }
     }, 1);
   }
@@ -216,10 +194,7 @@ export const recordFMPTime = (type: string) => {
 
 let subAppCleanupFn: undefined | (() => void);
 
-function setupSubApp(
-  params: initSubAppParams,
-  mainAppInfo: OrsIntegrationSetupParams,
-) {
+function setupSubApp(params: initSubAppParams, mainAppInfo: OrsIntegrationSetupParams) {
   const { integrations, ...subAppInfo } = params;
   if (integrations && Array.isArray(params.integrations)) {
     integrations.forEach((i) => {
@@ -231,10 +206,7 @@ function setupSubApp(
             subAppInfo,
           });
         } catch (error) {
-          logReport(
-            `initSubAppObserve方法中，${i.name || "未知插件名"}初始化错误`,
-            error,
-          );
+          logReport(`initSubAppObserve方法中，${i.name || '未知插件名'}初始化错误`, error);
         }
       }
     });
@@ -250,14 +222,10 @@ function setupSubApp(
 }
 
 /** 请确保在主应用中添加 WindowExposeIntegration集成 */
-export const initSubAppObserve = (
-  params: initSubAppParams,
-): undefined | (() => void) => {
+export const initSubAppObserve = (params: initSubAppParams): undefined | (() => void) => {
   try {
-    const mainAppInfo: OrsIntegrationSetupParams = (window as any)[
-      ORS_WINDOW_EXPOSE_KEY
-    ];
-    if (!mainAppInfo || typeof mainAppInfo !== "object") {
+    const mainAppInfo: OrsIntegrationSetupParams = (window as any)[ORS_WINDOW_EXPOSE_KEY];
+    if (!mainAppInfo || typeof mainAppInfo !== 'object') {
       return;
     }
     const orsWindow = mainAppInfo?.getOrsGlobalObject?.();
@@ -270,7 +238,7 @@ export const initSubAppObserve = (
       return setupSubApp(params, mainAppInfo);
       //主应用未初始化完成，需要作监听
     } else {
-      mainAppInfo.sdkLifeTimeEmitter.on("initObserveFinished", () => {
+      mainAppInfo.sdkLifeTimeEmitter.on('initObserveFinished', () => {
         setupSubApp(params, mainAppInfo);
       });
       return () => {
@@ -280,7 +248,7 @@ export const initSubAppObserve = (
       };
     }
   } catch (error) {
-    logReport("initSubAppObserve", error);
+    logReport('initSubAppObserve', error);
     return;
   }
 };

@@ -1,18 +1,15 @@
 /* eslint-disable max-lines */
-import type { Context, Contexts } from "@/types/scope";
-import type { Extra, Extras } from "@/types/scope";
-import type { Primitive } from "@/types/scope";
-import type { User } from "@/types/scope";
+import type { Context, Contexts } from '@/types/scope';
+import type { Extra, Extras } from '@/types/scope';
+import type { Primitive } from '@/types/scope';
+import type { User } from '@/types/scope';
 
 /**
  * A context to be used for capturing an event.
  * This can either be a Scope, or a partial ScopeContext,
  * or a callback that receives the current scope and returns a new scope to use.
  */
-export type CaptureContext =
-  | Scope
-  | Partial<ScopeContext>
-  | ((scope: Scope) => Scope);
+export type CaptureContext = Scope | Partial<ScopeContext> | ((scope: Scope) => Scope);
 
 /**
  * Data that can be converted to a Scope.
@@ -28,7 +25,7 @@ export interface ScopeContext {
 export interface SdkProcessingMetadata {
   [key: string]: unknown;
   requestSession?: {
-    status: "ok" | "errored" | "crashed";
+    status: 'ok' | 'errored' | 'crashed';
   };
   capturedSpanScope?: Scope;
   capturedSpanIsolationScope?: Scope;

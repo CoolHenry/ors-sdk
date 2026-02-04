@@ -1,28 +1,17 @@
-import type {
-  DedupeIntegrationParamsType,
-  OrsIntegrationType,
-} from "./integrations";
-import type { PageLoadVitalsData, NavigationVitalsData } from "./performance";
-import { CONSOLE_LEVEL } from "@/constant";
-import type { Extras } from "@/types/scope";
-import type { Mechanism } from "@/types/error";
+import type { DedupeIntegrationParamsType, OrsIntegrationType } from './integrations';
+import type { PageLoadVitalsData, NavigationVitalsData } from './performance';
+import { CONSOLE_LEVEL } from '@/constant';
+import type { Extras } from '@/types/scope';
+import type { Mechanism } from '@/types/error';
 
 export interface ISamplingRate {
   rumType: string;
   value: string;
 }
 
-export type SamplingEventStatusType = "unready" | "report" | "drop";
+export type SamplingEventStatusType = 'unready' | 'report' | 'drop';
 
-export type SamplingType =
-  | "sessionRate"
-  | "viewRate"
-  | "actionRate"
-  | "consoleRate"
-  | "traceRate"
-  | "resNorRate"
-  | "resErrRate"
-  | "logRepRate";
+export type SamplingType = 'sessionRate' | 'viewRate' | 'actionRate' | 'consoleRate' | 'traceRate' | 'resNorRate' | 'resErrRate' | 'logRepRate';
 
 // 动态类型
 export type SamplingRandomKey = `${SamplingType}Random`;
@@ -54,7 +43,7 @@ interface ISampleOriginData {
   blResUrl?: string[];
   blJsErrMsg?: string[];
   featureFlags?: {
-    sdkGzipSwitch?: "A" | "B";
+    sdkGzipSwitch?: 'A' | 'B';
   };
 }
 
@@ -78,7 +67,7 @@ export interface initObserveParams {
   /** 项目Id,由项目自动生成 */
   projectId: number | string;
   /**上报主体 马消or镜花缘 */
-  entity?: "mx" | "jhy";
+  entity?: 'mx' | 'jhy';
   /** 上报到平台域名 马消or镜花缘 生产or测试*/
   server?: string;
   /** 插件 */
@@ -98,21 +87,14 @@ export interface initObserveParams {
     dedupe?: DedupeIntegrationParamsType;
   };
   /** 集成配置， 如果传入函数，则入参为默认集成数组，返回值将作为最终集成， 如果传入列表则将和默认集成合并作为最终集成列表 */
-  integrations?:
-    | OrsIntegrationType[]
-    | ((defaultIntegrations: OrsIntegrationType[]) => OrsIntegrationType[]);
+  integrations?: OrsIntegrationType[] | ((defaultIntegrations: OrsIntegrationType[]) => OrsIntegrationType[]);
   /** 是否输出日志 */
   debug?: boolean;
   /** 上报前的数据处理函数，返回null时此条数据不会上报，注意根据 rumType区分数据类型 */
   beforeSend?: (data: CollectStoreType) => CollectStoreType | null;
 }
 
-export type IntegrationsParams = Partial<
-  Pick<
-    initObserveParams,
-    "defaultIntegrations" | "defaultIntegrationProps" | "integrations"
-  >
->;
+export type IntegrationsParams = Partial<Pick<initObserveParams, 'defaultIntegrations' | 'defaultIntegrationProps' | 'integrations'>>;
 
 export interface initSubAppParams {
   /** 项目名称 */
@@ -124,10 +106,7 @@ export interface initSubAppParams {
   integrations?: OrsIntegrationType[];
 }
 
-export type SessionParams = Omit<
-  initObserveParams,
-  "plugins" | "integrations" | "debug"
-> & { sessionInfo?: SessionInfosType };
+export type SessionParams = Omit<initObserveParams, 'plugins' | 'integrations' | 'debug'> & { sessionInfo?: SessionInfosType };
 
 // 初始化配置项的ts类型定义
 interface SessionInfo {
@@ -212,7 +191,7 @@ export interface ActionIdType {
 export interface ViewAttrsType {
   viewId: string;
   viewType: string;
-  viewSubType: "navigation" | "pageload";
+  viewSubType: 'navigation' | 'pageload';
   viewReferrer: string;
   viewUrl: string;
   viewHost: string;
@@ -227,20 +206,14 @@ export interface ViewAttrsType {
 }
 
 export interface ViewEventType {
-  rumType: "ors_view";
+  rumType: 'ors_view';
   sessionType: string;
   spentDuration: number;
   FMP: number;
 }
-export type ViewInfoBaseType = ViewEventType &
-  ViewAttrsType &
-  UserAttrsInfo &
-  SessionInfosType &
-  ActionIdType;
+export type ViewInfoBaseType = ViewEventType & ViewAttrsType & UserAttrsInfo & SessionInfosType & ActionIdType;
 
-export type ViewInfoType =
-  | (ViewInfoBaseType & PageLoadVitalsData)
-  | (ViewInfoBaseType & NavigationVitalsData);
+export type ViewInfoType = (ViewInfoBaseType & PageLoadVitalsData) | (ViewInfoBaseType & NavigationVitalsData);
 
 export interface CollectStoreConfigType {
   collectStoreLimit: number;
@@ -248,7 +221,7 @@ export interface CollectStoreConfigType {
 
 export interface ActionEventType {
   actionId: string;
-  rumType: "ors_action";
+  rumType: 'ors_action';
   type: string;
   sessionType: string;
   name: string | null;
@@ -262,10 +235,7 @@ export interface SessionInfosType {
   sessionId: string;
 }
 
-export type ActionInfoType = ActionEventType &
-  UserAttrsInfo &
-  SessionInfosType &
-  ViewAttrsType;
+export type ActionInfoType = ActionEventType & UserAttrsInfo & SessionInfosType & ViewAttrsType;
 
 export interface AttributesType {
   invoker: string;
@@ -286,7 +256,7 @@ export type LongTaskLoadProcessType = {
 };
 
 export interface LongTaskEventType {
-  rumType: "ors_longtask";
+  rumType: 'ors_longtask';
   name: string | null;
   duration: number | null;
   id: string;
@@ -297,11 +267,7 @@ export interface LongTaskEventType {
   longtaskEndTime: number;
 }
 
-export type LongTaskType = LongTaskEventType &
-  UserAttrsInfo &
-  SessionInfosType &
-  ViewAttrsType &
-  ActionIdType;
+export type LongTaskType = LongTaskEventType & UserAttrsInfo & SessionInfosType & ViewAttrsType & ActionIdType;
 
 export interface ResourceAndRequestEventType {
   rumType: string;
@@ -337,14 +303,10 @@ export interface ResourceAndRequestEventType {
   scenes?: string;
 }
 
-export type ResourceAndRequestInfoType = ResourceAndRequestEventType &
-  UserAttrsInfo &
-  SessionInfosType &
-  ViewAttrsType &
-  ActionIdType;
+export type ResourceAndRequestInfoType = ResourceAndRequestEventType & UserAttrsInfo & SessionInfosType & ViewAttrsType & ActionIdType;
 
 export interface ConsoleEventType {
-  rumType: "ors_console";
+  rumType: 'ors_console';
   id: string;
   level: string;
   args: any[];
@@ -352,23 +314,19 @@ export interface ConsoleEventType {
   endTime: number;
 }
 
-export type ConsoleInfoType = ConsoleEventType &
-  UserAttrsInfo &
-  SessionInfosType &
-  ViewAttrsType &
-  ActionIdType;
+export type ConsoleInfoType = ConsoleEventType & UserAttrsInfo & SessionInfosType & ViewAttrsType & ActionIdType;
 
 interface BaseErrorEventType {
   id: string;
-  rumType: "ors_error";
-  type: "blank_screen" | "js";
+  rumType: 'ors_error';
+  type: 'blank_screen' | 'js';
   subtype: string;
   mechanism: Mechanism;
   msg: string;
-  source: "network" | "js";
+  source: 'network' | 'js';
   errorObj: string | undefined;
   catId: string;
-  sessionType: "user";
+  sessionType: 'user';
   filename: string;
   componentName?: string;
   orsCompMark?: string;
@@ -377,33 +335,22 @@ interface BaseErrorEventType {
 }
 
 export interface JsErrorEventType extends BaseErrorEventType {
-  type: "js";
+  type: 'js';
 }
 
-export type JsErrorInfoType = JsErrorEventType &
-  UserAttrsInfo &
-  SessionInfosType &
-  ViewAttrsType &
-  ActionIdType &
-  Extras;
+export type JsErrorInfoType = JsErrorEventType & UserAttrsInfo & SessionInfosType & ViewAttrsType & ActionIdType & Extras;
 
 export interface BlankScreenErrorEventType extends BaseErrorEventType {
-  type: "blank_screen";
+  type: 'blank_screen';
   reasonId?: string;
   resourceUrl?: string;
   resourceMethod?: string;
   resourceStatus?: number;
 }
 
-export type BlankScreenErrorInfoType = BlankScreenErrorEventType &
-  UserAttrsInfo &
-  SessionInfosType &
-  ViewAttrsType &
-  ActionIdType;
+export type BlankScreenErrorInfoType = BlankScreenErrorEventType & UserAttrsInfo & SessionInfosType & ViewAttrsType & ActionIdType;
 
-type JsErrorInfoTypeProject =
-  | JsErrorInfoType
-  | (JsErrorInfoType & ProjectInfoType);
+type JsErrorInfoTypeProject = JsErrorInfoType | (JsErrorInfoType & ProjectInfoType);
 // 采集store类型
 export type CollectStoreType =
   | ActionInfoType
@@ -414,19 +361,12 @@ export type CollectStoreType =
   | JsErrorInfoTypeProject
   | BlankScreenErrorInfoType;
 
-export const isJsErrorWithProject = (
-  item: CollectStoreType,
-): item is JsErrorInfoType & ProjectInfoType => {
-  return (
-    item.rumType === "ors_error" &&
-    item.type === "js" &&
-    "projectInfo" in item &&
-    !!item.projectInfo?.projectId
-  );
+export const isJsErrorWithProject = (item: CollectStoreType): item is JsErrorInfoType & ProjectInfoType => {
+  return item.rumType === 'ors_error' && item.type === 'js' && 'projectInfo' in item && !!item.projectInfo?.projectId;
 };
 
 export interface SamplingManagerDecideParamsType {
-  rumType: "ors_view" | "ors_action" | "ors_resource" | "ors_console";
+  rumType: 'ors_view' | 'ors_action' | 'ors_resource' | 'ors_console';
 }
 
 export interface whiteScreenMonitorParamsType {

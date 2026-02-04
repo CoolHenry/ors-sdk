@@ -1,10 +1,6 @@
-import type { Mechanism, WrappedFunction } from "@/types/error";
-import {
-  addNonEnumerableProperty,
-  getOriginalFunction,
-  markFunctionWrapped,
-} from "@/utils/fill";
-import { getGlobalObject } from "@/utils/browserSupport";
+import type { Mechanism, WrappedFunction } from '@/types/error';
+import { addNonEnumerableProperty, getOriginalFunction, markFunctionWrapped } from '@/utils/fill';
+import { getGlobalObject } from '@/utils/browserSupport';
 
 /** Get's the global object for the current JavaScript runtime */
 const GLOBAL_OBJ = getGlobalObject() as unknown;
@@ -51,14 +47,8 @@ type WrapOptions =
       reportCallback: (info: ReportInfo) => void;
     };
 
-export function wrap<T extends WrappableFunction>(
-  fn: T,
-  options?: WrapOptions,
-): WrappedFunction<T>;
-export function wrap<NonFunction>(
-  fn: NonFunction,
-  options?: WrapOptions,
-): NonFunction;
+export function wrap<T extends WrappableFunction>(fn: T, options?: WrapOptions): WrappedFunction<T>;
+export function wrap<NonFunction>(fn: NonFunction, options?: WrapOptions): NonFunction;
 /**
  * Instruments the given function and sends an event to Sentry every time the
  * function throws an exception.
@@ -68,10 +58,7 @@ export function wrap<NonFunction>(
  * @returns The wrapped function.
  * @hidden
  */
-export function wrap<T extends WrappableFunction, NonFunction>(
-  fn: T | NonFunction,
-  options: WrapOptions = {},
-): NonFunction | WrappedFunction<T> {
+export function wrap<T extends WrappableFunction, NonFunction>(fn: T | NonFunction, options: WrapOptions = {}): NonFunction | WrappedFunction<T> {
   // for future readers what this does is wrap a function and then create
   // a bi-directional wrapping between them.
   //
@@ -80,7 +67,7 @@ export function wrap<T extends WrappableFunction, NonFunction>(
   //  wrapped.__ors_original__ -> original
 
   function isFunction(fn: T | NonFunction): fn is T {
-    return typeof fn === "function";
+    return typeof fn === 'function';
   }
 
   if (!isFunction(fn)) {
@@ -92,7 +79,7 @@ export function wrap<T extends WrappableFunction, NonFunction>(
     // the original wrapper.
     const wrapper = (fn as WrappedFunction<T>).__ors_wrapped__;
     if (wrapper) {
-      if (typeof wrapper === "function") {
+      if (typeof wrapper === 'function') {
         return wrapper;
       } else {
         // If we find that the `__ors_wrapped__` function is not a function at the time of accessing it, it means
@@ -154,14 +141,14 @@ export function wrap<T extends WrappableFunction, NonFunction>(
   // for both debugging and to prevent it to being wrapped/filled twice
   markFunctionWrapped(orsWrapped, fn);
 
-  addNonEnumerableProperty(fn, "__ors_wrapped__", orsWrapped);
+  addNonEnumerableProperty(fn, '__ors_wrapped__', orsWrapped);
 
   // Restore original function name (not all browsers allow that)
   try {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const descriptor = Object.getOwnPropertyDescriptor(orsWrapped, "name")!;
+    const descriptor = Object.getOwnPropertyDescriptor(orsWrapped, 'name')!;
     if (descriptor.configurable) {
-      Object.defineProperty(orsWrapped, "name", {
+      Object.defineProperty(orsWrapped, 'name', {
         get(): string {
           return fn.name;
         },

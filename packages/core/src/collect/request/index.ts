@@ -1,26 +1,20 @@
-import Base from "../base";
-import { logReport } from "@/config";
-import {
-  SessionParams,
-  RequestItem,
-  ResourceAndRequestInfoType,
-} from "@/types/init";
-import { eventBus, SamplingManager } from "@/config";
-import { windowOrs, Breadcrumbs } from "@/store";
-import type { FetchInfoType } from "@/types/init";
-import { MonitorDestroyReason } from "@/types/lifecycle";
-import { Logger } from "@/utils/common";
-import { urlIncludes, needSkipUrlCollect } from "@/utils";
-import { ResourceCollect } from "@/collect/resource/index";
-import { sdkLifeTimeEmitter } from "@/utils/mitt";
+import Base from '../base';
+import { logReport } from '@/config';
+import { SessionParams, RequestItem, ResourceAndRequestInfoType } from '@/types/init';
+import { eventBus, SamplingManager } from '@/config';
+import { windowOrs, Breadcrumbs } from '@/store';
+import type { FetchInfoType } from '@/types/init';
+import { MonitorDestroyReason } from '@/types/lifecycle';
+import { Logger } from '@/utils/common';
+import { urlIncludes, needSkipUrlCollect } from '@/utils';
+import { ResourceCollect } from '@/collect/resource/index';
+import { sdkLifeTimeEmitter } from '@/utils/mitt';
 
 export class RequestCollect extends Base {
   [x: string]: any;
   originalFetch: typeof window.fetch & { _isHijackedBySDK?: boolean };
   ResourceCollectStance: ResourceCollect;
-  originalOpen:
-    | (typeof XMLHttpRequest.prototype.open & { _isHijackedBySDK?: boolean })
-    | null;
+  originalOpen: (typeof XMLHttpRequest.prototype.open & { _isHijackedBySDK?: boolean }) | null;
   originalSend: typeof XMLHttpRequest.prototype.send | null;
   isEnableReport: boolean;
 
@@ -37,9 +31,9 @@ export class RequestCollect extends Base {
   }
 
   private monitorDestroy() {
-    sdkLifeTimeEmitter.on("monitorDestroy", (reason: MonitorDestroyReason) => {
+    sdkLifeTimeEmitter.on('monitorDestroy', (reason: MonitorDestroyReason) => {
       switch (reason) {
-        case "sdk:teardown":
+        case 'sdk:teardown':
           this.destroyMonitor();
           break;
         default:
@@ -56,7 +50,7 @@ export class RequestCollect extends Base {
       // 设置 fetch 拦截
       this.setupFetchInterception();
     } catch (error) {
-      logReport("initMonitor", error);
+      logReport('initMonitor', error);
     }
   }
 
@@ -65,33 +59,29 @@ export class RequestCollect extends Base {
     try {
       this.isEnableReport = false;
     } catch (error) {
-      logReport("destroyRequestMonitor", error);
+      logReport('destroyRequestMonitor', error);
     }
   }
   /** 上报请求 */
   private reportRequest(item: RequestItem): void {
     try {
-      const entryResource = window.performance.getEntriesByType("resource");
+      const entryResource = window.performance.getEntriesByType('resource');
 
       for (let i = entryResource.length - 1; i >= 0; i--) {
         const entry = entryResource[i];
         if (this.fobiddenReportSdkResource(entry)) {
           continue;
         }
-        if (
-          this.isPerformanceResourceTiming(entry) &&
-          entry.name.endsWith(item?.url)
-        ) {
+        if (this.isPerformanceResourceTiming(entry) && entry.name.endsWith(item?.url)) {
           requestAnimationFrame(() => {
             try {
               // 消费请求
-              const resourceData: ResourceAndRequestInfoType | null =
-                this.ResourceCollectStance.handleResourceData(entry, {
-                  method: item?.method || "get",
-                  netType: "api",
-                  responseBodySize: item?.responseBodySize,
-                  status: item?.status,
-                });
+              const resourceData: ResourceAndRequestInfoType | null = this.ResourceCollectStance.handleResourceData(entry, {
+                method: item?.method || 'get',
+                netType: 'api',
+                responseBodySize: item?.responseBodySize,
+                status: item?.status,
+              });
               if (!resourceData) {
                 return;
               }
@@ -99,39 +89,34 @@ export class RequestCollect extends Base {
                 this.reportRequestData(resourceData);
               } else {
                 this.reportRequestData(resourceData);
-                eventBus.emit("errorStaticRes", resourceData);
+                eventBus.emit('errorStaticRes', resourceData);
               }
             } catch (error) {
-              logReport("reportRequest", error);
+              logReport('reportRequest', error);
             }
           });
           break;
         }
       }
     } catch (error) {
-      logReport("reportRequest", error);
+      logReport('reportRequest', error);
     }
   }
   private reportRequestData(resourceData: ResourceAndRequestInfoType) {
     /** 根据采样率判断是否需要上报操作数据，如果需要就上报，否则只采集数据 */
-    const isRateDrop =
-      SamplingManager.decide({ rumType: "ors_resource" }) === "drop";
+    const isRateDrop = SamplingManager.decide({ rumType: 'ors_resource' }) === 'drop';
     if (isRateDrop) {
       // 采集的数据存入store
       Breadcrumbs.add(resourceData);
     }
     this.reportData([resourceData]);
   }
-  private isPerformanceResourceTiming(
-    entry: PerformanceEntry,
-  ): entry is PerformanceResourceTiming {
+  private isPerformanceResourceTiming(entry: PerformanceEntry): entry is PerformanceResourceTiming {
     return (
-      entry.entryType === "resource" &&
-      "initiatorType" in entry &&
-      typeof (entry as PerformanceResourceTiming).nextHopProtocol ===
-        "string" &&
-      (entry.initiatorType === "fetch" ||
-        entry.initiatorType === "xmlhttprequest")
+      entry.entryType === 'resource' &&
+      'initiatorType' in entry &&
+      typeof (entry as PerformanceResourceTiming).nextHopProtocol === 'string' &&
+      (entry.initiatorType === 'fetch' || entry.initiatorType === 'xmlhttprequest')
     );
   }
   //过滤sdk自身上报url
@@ -151,7 +136,7 @@ export class RequestCollect extends Base {
       }
     } catch (e) {
       // 处理URL解析错误，比如无效的URL
-      logReport("fobiddenReportSdkResource", e);
+      logReport('fobiddenReportSdkResource', e);
       return false;
     }
   }
@@ -174,26 +159,15 @@ export class RequestCollect extends Base {
     // 防止重复监听
     this.originalOpen._isHijackedBySDK = true;
 
-    proto.open = function (
-      method: string,
-      url: string,
-      ...rest: (boolean | string | null | undefined)[]
-    ) {
+    proto.open = function (method: string, url: string, ...rest: (boolean | string | null | undefined)[]) {
       try {
         this._method = method;
         this._url = url;
       } catch (error) {
-        logReport("hijackXhrOpenError", error);
+        logReport('hijackXhrOpenError', error);
       }
       if (that.originalOpen) {
-        return (
-          that.originalOpen as (
-            this: XMLHttpRequest,
-            method: string,
-            url: string,
-            ...rest: any[]
-          ) => any
-        ).call(this, method, url, ...rest);
+        return (that.originalOpen as (this: XMLHttpRequest, method: string, url: string, ...rest: any[]) => any).call(this, method, url, ...rest);
       }
     };
 
@@ -203,10 +177,10 @@ export class RequestCollect extends Base {
         const xhr = this;
         if (!needSkipUrlCollect(xhr._url, that.params)) {
           if (xhr.addEventListener) {
-            xhr.addEventListener("load", () => {
+            xhr.addEventListener('load', () => {
               that.updateXhrByResponseType(xhr);
             });
-            xhr.addEventListener("error", () => {
+            xhr.addEventListener('error', () => {
               that.updateXhrByResponseType(xhr);
             });
           } else {
@@ -219,13 +193,10 @@ export class RequestCollect extends Base {
           }
         }
       } catch (error) {
-        logReport("hijackXhrSendError", error);
+        logReport('hijackXhrSendError', error);
       }
       if (that.originalSend) {
-        return that.originalSend.apply(
-          this,
-          args?.length > 0 ? [args?.[0]] : [],
-        );
+        return that.originalSend.apply(this, args?.length > 0 ? [args?.[0]] : []);
       }
     };
   }
@@ -236,20 +207,18 @@ export class RequestCollect extends Base {
       /**是否采集上报异步接口的响应体大小 */
       const isCollectResponseBodySize = windowOrs.userConfig.responseBodySize;
       if (isCollectResponseBodySize) {
-        if (xhr.responseType === "text" || xhr.responseType === "") {
-          const bytes = xhr.responseText
-            ? new TextEncoder().encode(xhr.responseText).length
-            : null;
+        if (xhr.responseType === 'text' || xhr.responseType === '') {
+          const bytes = xhr.responseText ? new TextEncoder().encode(xhr.responseText).length : null;
           this.updateXhrList(xhr, bytes);
-        } else if (xhr.responseType === "json") {
+        } else if (xhr.responseType === 'json') {
           const s = JSON.stringify(xhr.response);
           const bytes = new TextEncoder().encode(s).length;
           this.updateXhrList(xhr, bytes);
-        } else if (xhr.responseType === "arraybuffer") {
+        } else if (xhr.responseType === 'arraybuffer') {
           const ab = xhr.response;
           const bytes = ab ? ab.byteLength : null;
           this.updateXhrList(xhr, bytes);
-        } else if (xhr.responseType === "blob") {
+        } else if (xhr.responseType === 'blob') {
           const blob = xhr.response;
           const bytes = blob.size;
           this.updateXhrList(xhr, bytes);
@@ -260,7 +229,7 @@ export class RequestCollect extends Base {
         this.updateXhrList(xhr);
       }
     } catch (error) {
-      logReport("updateXhrByResponseType", error);
+      logReport('updateXhrByResponseType', error);
     }
   }
 
@@ -270,7 +239,7 @@ export class RequestCollect extends Base {
       if (!this.isEnableReport) {
         return;
       }
-      Logger.log("[log][updateXhrList]:", xhr);
+      Logger.log('[log][updateXhrList]:', xhr);
       this.reportRequest({
         url: xhr?.responseURL || xhr?._url,
         method: xhr?._method,
@@ -278,7 +247,7 @@ export class RequestCollect extends Base {
         responseBodySize: bytes ?? null,
       });
     } catch (error) {
-      logReport("updateXhrList", error);
+      logReport('updateXhrList', error);
     }
   }
 
@@ -296,17 +265,9 @@ export class RequestCollect extends Base {
         return;
       }
 
-      const safeFetch: typeof window.fetch & { _isHijackedBySDK?: boolean } = (
-        input,
-        init,
-      ) => {
+      const safeFetch: typeof window.fetch & { _isHijackedBySDK?: boolean } = (input, init) => {
         try {
-          const url =
-            input instanceof Request
-              ? input?.url
-              : input instanceof URL
-                ? input?.href
-                : input;
+          const url = input instanceof Request ? input?.url : input instanceof URL ? input?.href : input;
           if (needSkipUrlCollect(url, this.selfReportUrl)) {
             return this.originalFetch(input, init);
           }
@@ -315,9 +276,7 @@ export class RequestCollect extends Base {
 
           if (input instanceof Request) {
             // 如果传的是 Request 对象，重新构造一个新的 Request
-            const originalHeaders = input.headers
-              ? Object.fromEntries(input.headers.entries())
-              : {};
+            const originalHeaders = input.headers ? Object.fromEntries(input.headers.entries()) : {};
             newRequest = new Request(input, {
               ...init,
               headers: new Headers({
@@ -326,10 +285,7 @@ export class RequestCollect extends Base {
             });
           } else {
             // 如果传的是 URL 字符串
-            const originalHeaders =
-              init && init.headers
-                ? Object.fromEntries(new Headers(init.headers)?.entries())
-                : {};
+            const originalHeaders = init && init.headers ? Object.fromEntries(new Headers(init.headers)?.entries()) : {};
             newRequest = input;
             init = {
               ...init,
@@ -346,16 +302,13 @@ export class RequestCollect extends Base {
                 this.updateFetchList(
                   {
                     url,
-                    method:
-                      input instanceof Request
-                        ? input?.method
-                        : (init?.method ?? "GET"),
+                    method: input instanceof Request ? input?.method : init?.method ?? 'GET',
                     status,
                   },
-                  response,
+                  response
                 );
               } catch (err) {
-                logReport("safeFetchResponse", err);
+                logReport('safeFetchResponse', err);
               }
               return response; //必须返回原始 response
             })
@@ -364,7 +317,7 @@ export class RequestCollect extends Base {
             });
         } catch (err) {
           //  如果SDK逻辑崩了，直接回退原生fetch
-          logReport("safeFetch", err);
+          logReport('safeFetch', err);
           return this.originalFetch(input, init);
         }
       };
@@ -375,7 +328,7 @@ export class RequestCollect extends Base {
       // 替换全局 fetch
       window.fetch = safeFetch;
     } catch (error) {
-      logReport("setupFetchInterception", error);
+      logReport('setupFetchInterception', error);
     }
   }
 
@@ -407,7 +360,7 @@ export class RequestCollect extends Base {
         this.reportRequest(updateReqInfo);
       }
     } catch (error) {
-      logReport("updateFetchList", error);
+      logReport('updateFetchList', error);
     }
   }
 }

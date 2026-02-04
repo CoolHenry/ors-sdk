@@ -1,7 +1,7 @@
-import { htmlTreeAsString } from "./htmlTreeAsString";
-import { isElement, isError, isEvent, isInstanceOf } from "./is";
-import { truncate } from "./string";
-import { logReport } from "@/config";
+import { htmlTreeAsString } from './htmlTreeAsString';
+import { isElement, isError, isEvent, isInstanceOf } from './is';
+import { truncate } from './string';
+import { logReport } from '@/config';
 
 /**
  * Transforms any `Error` or `Event` into a plain object with all of their enumerable properties, and some of their
@@ -47,10 +47,7 @@ export function convertToPlainObject<V>(value: V):
       ...getOwnProperties(value),
     };
 
-    if (
-      typeof CustomEvent !== "undefined" &&
-      isInstanceOf(value, CustomEvent)
-    ) {
+    if (typeof CustomEvent !== 'undefined' && isInstanceOf(value, CustomEvent)) {
       newObj.detail = value.detail;
     }
 
@@ -63,19 +60,17 @@ export function convertToPlainObject<V>(value: V):
 /** Creates a string representation of the target of an `Event` object */
 function serializeEventTarget(target: unknown): string {
   try {
-    return isElement(target)
-      ? htmlTreeAsString(target)
-      : Object.prototype.toString.call(target);
+    return isElement(target) ? htmlTreeAsString(target) : Object.prototype.toString.call(target);
   } catch (e) {
-    logReport("serializeEventTarget", e);
-    return "<unknown>";
+    logReport('serializeEventTarget', e);
+    return '<unknown>';
   }
 }
 
 /** Filters out all but an object's own properties */
 function getOwnProperties(obj: unknown): { [key: string]: unknown } {
   try {
-    if (typeof obj === "object" && obj !== null) {
+    if (typeof obj === 'object' && obj !== null) {
       const extractedProps: { [key: string]: unknown } = {};
       for (const property in obj) {
         if (Object.prototype.hasOwnProperty.call(obj, property)) {
@@ -87,7 +82,7 @@ function getOwnProperties(obj: unknown): { [key: string]: unknown } {
       return {};
     }
   } catch (e) {
-    logReport("getOwnProperties", e);
+    logReport('getOwnProperties', e);
     return {};
   }
 }
@@ -97,10 +92,7 @@ function getOwnProperties(obj: unknown): { [key: string]: unknown } {
  * and truncated list that will be used inside the event message.
  * eg. `Non-error exception captured with keys: foo, bar, baz`
  */
-export function extractExceptionKeysForMessage(
-  exception: Record<string, unknown>,
-  maxLength = 40,
-): string {
+export function extractExceptionKeysForMessage(exception: Record<string, unknown>, maxLength = 40): string {
   try {
     const keys = Object.keys(convertToPlainObject(exception));
     keys.sort();
@@ -108,7 +100,7 @@ export function extractExceptionKeysForMessage(
     const firstKey = keys[0];
 
     if (!firstKey) {
-      return "[object has no keys]";
+      return '[object has no keys]';
     }
 
     if (firstKey.length >= maxLength) {
@@ -116,7 +108,7 @@ export function extractExceptionKeysForMessage(
     }
 
     for (let includedKeys = keys.length; includedKeys > 0; includedKeys--) {
-      const serialized = keys.slice(0, includedKeys).join(", ");
+      const serialized = keys.slice(0, includedKeys).join(', ');
       if (serialized.length > maxLength) {
         continue;
       }
@@ -126,9 +118,9 @@ export function extractExceptionKeysForMessage(
       return truncate(serialized, maxLength);
     }
 
-    return "";
+    return '';
   } catch (e) {
-    logReport("extractExceptionKeysForMessage", e);
-    return "";
+    logReport('extractExceptionKeysForMessage', e);
+    return '';
   }
 }

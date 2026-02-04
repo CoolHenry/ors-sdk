@@ -1,18 +1,16 @@
-import { logReport } from "@/config";
-import { ViewInfoType } from "@/types/init";
+import { logReport } from '@/config';
+import { ViewInfoType } from '@/types/init';
 
 const cachedViewInfoMap: Record<string, ViewInfoType> = {};
 export const MAX_VIEW_INFO_CACHED_LENGTH = 30;
-const cachedViewInfoList: ViewInfoType[] = new Array(
-  MAX_VIEW_INFO_CACHED_LENGTH,
-);
+const cachedViewInfoList: ViewInfoType[] = new Array(MAX_VIEW_INFO_CACHED_LENGTH);
 let currentIndex = 0;
 
 export const getViewInfo = (viewId: string): ViewInfoType | undefined => {
   try {
     return cachedViewInfoMap[viewId];
   } catch (error) {
-    logReport("viewStore getViewInfo", error);
+    logReport('viewStore getViewInfo', error);
     return;
   }
 };
@@ -32,6 +30,6 @@ export const setViewInfo = (view: ViewInfoType) => {
     }
     currentIndex++;
   } catch (error) {
-    logReport("viewStore setViewInfo", error);
+    logReport('viewStore setViewInfo', error);
   }
 };

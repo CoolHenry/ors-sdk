@@ -1,4 +1,4 @@
-import { WindowOrsType } from "@/types/windowOrs";
+import { WindowOrsType } from '@/types/windowOrs';
 
 declare global {
   interface Window {
@@ -7,4 +7,4 @@ declare global {
     MDPWebViewJavascriptBridge?: any;
   }
 }
-export * from "./export";
+export * from './export';

@@ -25,15 +25,7 @@ class EventEmitter {
   off(eventName: string, callback: { (args: any): void }) {
     if (this.events[eventName]) {
       this.events[eventName] = this.events[eventName].filter(
-        (cb: {
-          (...args: any[]): void;
-          (): void;
-          (): void;
-          (resource: any): void;
-          (): void;
-          (): void;
-          (...args: any[]): void;
-        }) => cb !== callback,
+        (cb: { (...args: any[]): void; (): void; (): void; (resource: any): void; (): void; (): void; (...args: any[]): void }) => cb !== callback
       );
     }
   }

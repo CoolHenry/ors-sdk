@@ -1,12 +1,12 @@
-import ErrorBase from "./error";
-import { ErrorCategoryEnum, ErrorLevelEnum } from "@/constant";
-import { logReport } from "@/config";
-import { windowOrs } from "@/store";
-import type { SessionParams } from "@/types/init";
-import { MonitorDestroyReason } from "@/types/lifecycle";
-import { Logger } from "@/utils/common";
-import { shouldIgnoreOnError } from "./helpers";
-import { sdkLifeTimeEmitter } from "@/utils/mitt";
+import ErrorBase from './error';
+import { ErrorCategoryEnum, ErrorLevelEnum } from '@/constant';
+import { logReport } from '@/config';
+import { windowOrs } from '@/store';
+import type { SessionParams } from '@/types/init';
+import { MonitorDestroyReason } from '@/types/lifecycle';
+import { Logger } from '@/utils/common';
+import { shouldIgnoreOnError } from './helpers';
+import { sdkLifeTimeEmitter } from '@/utils/mitt';
 /**
  * 资源加载错误
  */
@@ -21,9 +21,9 @@ class ResourceError extends ErrorBase {
     this.monitorDestroy();
   }
   private monitorDestroy() {
-    sdkLifeTimeEmitter.on("monitorDestroy", (reason: MonitorDestroyReason) => {
+    sdkLifeTimeEmitter.on('monitorDestroy', (reason: MonitorDestroyReason) => {
       switch (reason) {
-        case "sdk:teardown":
+        case 'sdk:teardown':
           this.destroyListenter();
           break;
         default:
@@ -33,7 +33,7 @@ class ResourceError extends ErrorBase {
   }
 
   jsAndResError(event: any) {
-    Logger.log("[log][errorEvent-jsAndRes]:", event);
+    Logger.log('[log][errorEvent-jsAndRes]:', event);
     try {
       if (!event) {
         return;
@@ -44,55 +44,48 @@ class ResourceError extends ErrorBase {
       // 错误信息黑名单
       this.category = ErrorCategoryEnum.RESOURCE_ERROR;
       const target = event.target || event.srcElement;
-      const isElementTarget =
-        target instanceof HTMLScriptElement ||
-        target instanceof HTMLLinkElement ||
-        target instanceof HTMLImageElement;
+      const isElementTarget = target instanceof HTMLScriptElement || target instanceof HTMLLinkElement || target instanceof HTMLImageElement;
       if (!isElementTarget) {
         setTimeout(() => {
           try {
             this.recordError({
               message: event?.message,
               error: event?.error,
-              errorSubType: "js",
+              errorSubType: 'js',
               mechanism: {
                 handled: false,
-                type: "auto.browser.global_handlers.onerror",
+                type: 'auto.browser.global_handlers.onerror',
               },
               filename: event?.filename,
             });
           } catch (error) {
-            logReport("jsRecordError", error);
+            logReport('jsRecordError', error);
           }
         }, 0);
         return; // js error
       }
 
-      this.level =
-        target?.tagName.toUpperCase() === "IMG"
-          ? ErrorLevelEnum.WARN
-          : ErrorLevelEnum.ERROR;
-      this.msg = "加载 " + target?.tagName + " 资源错误";
-      this.url =
-        (target as HTMLImageElement)?.src || (target as HTMLLinkElement)?.href;
+      this.level = target?.tagName.toUpperCase() === 'IMG' ? ErrorLevelEnum.WARN : ErrorLevelEnum.ERROR;
+      this.msg = '加载 ' + target?.tagName + ' 资源错误';
+      this.url = (target as HTMLImageElement)?.src || (target as HTMLLinkElement)?.href;
       this.errorObj = {
         stack: target?.outerHTML,
       };
       windowOrs.orsDataInfo.resourceErrorList.push(this.url);
     } catch (error) {
-      logReport("listenerError", error);
+      logReport('listenerError', error);
     }
   }
   /**
    * 注册onerror事件
    */
   handleError() {
-    window.addEventListener("error", this.listenerError, true);
+    window.addEventListener('error', this.listenerError, true);
   }
 
   // 销毁错误监听器
   destroyListenter() {
-    window.removeEventListener("error", this.listenerError, true);
+    window.removeEventListener('error', this.listenerError, true);
   }
 }
 export default ResourceError;

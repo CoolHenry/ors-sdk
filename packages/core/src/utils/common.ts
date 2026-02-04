@@ -1,12 +1,8 @@
-import { logReport } from "@/config";
-import { InitLogType } from "@/types/init";
-import { ORS_SDK_LOGGER_KEY } from "@/constant";
+import { logReport } from '@/config';
+import { InitLogType } from '@/types/init';
+import { ORS_SDK_LOGGER_KEY } from '@/constant';
 export function getPathName(pathname: string): string {
-  return pathname && typeof pathname === "string"
-    ? pathname.includes("#")
-      ? pathname.replace(/^#\/?/, "/")
-      : pathname
-    : "";
+  return pathname && typeof pathname === 'string' ? (pathname.includes('#') ? pathname.replace(/^#\/?/, '/') : pathname) : '';
 }
 
 export function parsePattern(pattern: string | RegExp) {
@@ -14,7 +10,7 @@ export function parsePattern(pattern: string | RegExp) {
     if (pattern instanceof RegExp) {
       return pattern;
     }
-    if (typeof pattern === "string") {
+    if (typeof pattern === 'string') {
       // 匹配形如 `/xxx/flags`
       const regexMatch = pattern.match(/^\/(.+)\/([gimsuy]*)$/);
       if (regexMatch) {
@@ -24,7 +20,7 @@ export function parsePattern(pattern: string | RegExp) {
     }
     return pattern;
   } catch (error) {
-    logReport("parsePattern", error);
+    logReport('parsePattern', error);
     return pattern;
   }
 }
@@ -32,37 +28,37 @@ export function parsePattern(pattern: string | RegExp) {
 export function JSONstringify(data: unknown): string {
   try {
     if (data === undefined) {
-      logReport("JSONstringify", "Unsupported type: undefined ");
-      return ""; // 或者 return JSON.stringify(data); // null 是可以的，但 undefined 不行
+      logReport('JSONstringify', 'Unsupported type: undefined ');
+      return ''; // 或者 return JSON.stringify(data); // null 是可以的，但 undefined 不行
     }
     // 手动处理不可序列化的类型
-    if (typeof data === "symbol") {
-      logReport("JSONstringify", "Unsupported type: symbol");
-      return "";
+    if (typeof data === 'symbol') {
+      logReport('JSONstringify', 'Unsupported type: symbol');
+      return '';
     }
     // 手动处理不可序列化的类型
-    if (typeof data === "function") {
-      logReport("JSONstringify", "Unsupported type:  function");
-      return "";
+    if (typeof data === 'function') {
+      logReport('JSONstringify', 'Unsupported type:  function');
+      return '';
     }
     return JSON.stringify(data, getCircularReplacer());
   } catch (error) {
-    logReport("JSONstringify", error);
-    return "";
+    logReport('JSONstringify', error);
+    return '';
   }
 }
 function getCircularReplacer() {
   try {
     const seen = new WeakSet();
     return (_key: any, value: WeakKey | null) => {
-      if (typeof value === "object" && value !== null) {
-        if (seen.has(value)) return "[Circular]";
+      if (typeof value === 'object' && value !== null) {
+        if (seen.has(value)) return '[Circular]';
         seen.add(value);
       }
       return value;
     };
   } catch (error) {
-    logReport("getCircularReplacer", error);
+    logReport('getCircularReplacer', error);
     // 返回默认的空replacer，确保必有返回值
     return (_key: any, value: any) => value;
   }

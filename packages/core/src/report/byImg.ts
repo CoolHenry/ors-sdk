@@ -4,10 +4,9 @@
 export default class ByImg {
   toReport(url: string, data: { reportWay: string }) {
     try {
-      data.reportWay = "img";
+      data.reportWay = 'img';
       const img = new Image();
-      img.src =
-        url + "?v=" + new Date().getTime() + "&" + this.formatParams(data);
+      img.src = url + '?v=' + new Date().getTime() + '&' + this.formatParams(data);
     } catch (error) {
       console.log(error);
     }
@@ -19,8 +18,8 @@ export default class ByImg {
   formatParams(data: { [x: string]: string | number | boolean }) {
     const arr: any[] = [];
     for (const name in data) {
-      arr.push(encodeURIComponent(name) + "=" + encodeURIComponent(data[name]));
+      arr.push(encodeURIComponent(name) + '=' + encodeURIComponent(data[name]));
     }
-    return arr.join("&");
+    return arr.join('&');
   }
 }

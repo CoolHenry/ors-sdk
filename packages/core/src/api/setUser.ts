@@ -1,7 +1,7 @@
 // 自定义字段
-import { logReport } from "@/config";
-import { UserAttrsInfo } from "@/types/init";
-import { userInfoStore } from "@/store";
+import { logReport } from '@/config';
+import { UserAttrsInfo } from '@/types/init';
+import { userInfoStore } from '@/store';
 
 export const setUser = (userInfo: Partial<UserAttrsInfo>) => {
   try {
@@ -15,6 +15,6 @@ export const setUser = (userInfo: Partial<UserAttrsInfo>) => {
       });
     }
   } catch (error) {
-    logReport("setUser", error);
+    logReport('setUser', error);
   }
 };

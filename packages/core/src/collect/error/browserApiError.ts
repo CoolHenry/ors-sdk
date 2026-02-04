@@ -1,17 +1,13 @@
-import { fill, getFunctionName, getOriginalFunction } from "@/utils/fill";
-import { WINDOW, wrap, ReportInfo } from "./helpers";
-import ErrorBase from "./error";
-import {
-  XMLHttpRequestProp,
-  BrowserApiErrorsOptions,
-  WrappedFunction,
-} from "@/types/error";
-import { DEFAULT_EVENT_TARGET } from "@/constant";
-import { logReport } from "@/config";
-import type { SessionParams } from "@/types/init";
-import { MonitorDestroyReason } from "@/types/lifecycle";
-import { windowOrs } from "@/store/windowOrs";
-import { sdkLifeTimeEmitter } from "@/utils/mitt";
+import { fill, getFunctionName, getOriginalFunction } from '@/utils/fill';
+import { WINDOW, wrap, ReportInfo } from './helpers';
+import ErrorBase from './error';
+import { XMLHttpRequestProp, BrowserApiErrorsOptions, WrappedFunction } from '@/types/error';
+import { DEFAULT_EVENT_TARGET } from '@/constant';
+import { logReport } from '@/config';
+import type { SessionParams } from '@/types/init';
+import { MonitorDestroyReason } from '@/types/lifecycle';
+import { windowOrs } from '@/store/windowOrs';
+import { sdkLifeTimeEmitter } from '@/utils/mitt';
 
 class BrowserApiError extends ErrorBase {
   isEnableReport: boolean;
@@ -37,32 +33,28 @@ class BrowserApiError extends ErrorBase {
       };
       // We may want to adjust this to check for client etc.
       if (_options.setTimeout) {
-        fill(WINDOW, "setTimeout", this._wrapTimeFunction.bind(this));
+        fill(WINDOW, 'setTimeout', this._wrapTimeFunction.bind(this));
       }
 
       if (_options.setInterval) {
-        fill(WINDOW, "setInterval", this._wrapTimeFunction.bind(this));
+        fill(WINDOW, 'setInterval', this._wrapTimeFunction.bind(this));
       }
 
       if (_options.requestAnimationFrame) {
-        fill(WINDOW, "requestAnimationFrame", this._wrapRAF.bind(this));
+        fill(WINDOW, 'requestAnimationFrame', this._wrapRAF.bind(this));
       }
 
-      if (_options.XMLHttpRequest && "XMLHttpRequest" in WINDOW) {
-        fill(XMLHttpRequest.prototype, "send", this._wrapXHR.bind(this));
+      if (_options.XMLHttpRequest && 'XMLHttpRequest' in WINDOW) {
+        fill(XMLHttpRequest.prototype, 'send', this._wrapXHR.bind(this));
       }
 
       const eventTargetOption = _options.eventTarget;
       if (eventTargetOption) {
-        const eventTarget = Array.isArray(eventTargetOption)
-          ? eventTargetOption
-          : DEFAULT_EVENT_TARGET;
-        eventTarget.forEach((target) =>
-          this._wrapEventTarget(target, _options),
-        );
+        const eventTarget = Array.isArray(eventTargetOption) ? eventTargetOption : DEFAULT_EVENT_TARGET;
+        eventTarget.forEach((target) => this._wrapEventTarget(target, _options));
       }
     } catch (error) {
-      logReport("fillBrowserApi", error);
+      logReport('fillBrowserApi', error);
     }
   }
   reportCallback({ message, error, errorType, mechanism }: ReportInfo) {
@@ -80,9 +72,9 @@ class BrowserApiError extends ErrorBase {
     this.isEnableReport = false;
   }
   private monitorDestroy() {
-    sdkLifeTimeEmitter.on("monitorDestroy", (reason: MonitorDestroyReason) => {
+    sdkLifeTimeEmitter.on('monitorDestroy', (reason: MonitorDestroyReason) => {
       switch (reason) {
-        case "sdk:teardown":
+        case 'sdk:teardown':
           this.destroyListenter();
           break;
         default:
@@ -95,9 +87,7 @@ class BrowserApiError extends ErrorBase {
    */
   // export const browserApiErrorsIntegration = defineIntegration(_browserApiErrorsIntegration);
 
-  _wrapTimeFunction<T extends (...args: any[]) => any>(
-    original: T,
-  ): (...args: Parameters<T>) => ReturnType<T> {
+  _wrapTimeFunction<T extends (...args: any[]) => any>(original: T): (...args: Parameters<T>) => ReturnType<T> {
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     const that = this;
     return function (this: unknown, ...args: Parameters<T>): ReturnType<T> {
@@ -114,9 +104,7 @@ class BrowserApiError extends ErrorBase {
     };
   }
 
-  _wrapRAF(
-    original: (callback: FrameRequestCallback) => number,
-  ): (callback: FrameRequestCallback) => number {
+  _wrapRAF(original: (callback: FrameRequestCallback) => number): (callback: FrameRequestCallback) => number {
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     const that = this;
     return function (this: unknown, callback: FrameRequestCallback): number {
@@ -124,11 +112,11 @@ class BrowserApiError extends ErrorBase {
         wrap(callback, {
           mechanism: {
             data: {
-              function: "requestAnimationFrame",
+              function: 'requestAnimationFrame',
               handler: getFunctionName(original),
             },
             handled: false,
-            type: "auto.browser.browserapierrors.requestAnimationFrame",
+            type: 'auto.browser.browserapierrors.requestAnimationFrame',
           },
           reportCallback: that.reportCallback,
         }),
@@ -136,26 +124,16 @@ class BrowserApiError extends ErrorBase {
     };
   }
 
-  _wrapXHR(
-    originalSend: (body?: Document | XMLHttpRequestBodyInit | null) => void,
-  ): (body?: Document | XMLHttpRequestBodyInit | null) => void {
+  _wrapXHR(originalSend: (body?: Document | XMLHttpRequestBodyInit | null) => void): (body?: Document | XMLHttpRequestBodyInit | null) => void {
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     const that = this;
-    return function (
-      this: XMLHttpRequest,
-      body?: Document | XMLHttpRequestBodyInit | null,
-    ): void {
+    return function (this: XMLHttpRequest, body?: Document | XMLHttpRequestBodyInit | null): void {
       // eslint-disable-next-line @typescript-eslint/no-this-alias
       const xhr = this;
-      const xmlHttpRequestProps: XMLHttpRequestProp[] = [
-        "onload",
-        "onerror",
-        "onprogress",
-        "onreadystatechange",
-      ];
+      const xmlHttpRequestProps: XMLHttpRequestProp[] = ['onload', 'onerror', 'onprogress', 'onreadystatechange'];
 
       xmlHttpRequestProps.forEach((prop) => {
-        if (prop in xhr && typeof xhr[prop] === "function") {
+        if (prop in xhr && typeof xhr[prop] === 'function') {
           fill(xhr, prop, function (original: any) {
             const wrapOptions = {
               mechanism: {
@@ -172,8 +150,7 @@ class BrowserApiError extends ErrorBase {
             // If Instrument integration has been called before BrowserApiErrors, get the name of original function
             const originalFunction = getOriginalFunction(original);
             if (originalFunction) {
-              wrapOptions.mechanism.data.handler =
-                getFunctionName(originalFunction);
+              wrapOptions.mechanism.data.handler = getFunctionName(originalFunction);
             }
 
             // Otherwise wrap directly
@@ -186,39 +163,27 @@ class BrowserApiError extends ErrorBase {
     };
   }
 
-  _wrapEventTarget(
-    target: string,
-    integrationOptions: BrowserApiErrorsOptions,
-  ): void {
-    const globalObject = WINDOW as unknown as Record<
-      string,
-      { prototype?: object }
-    >;
+  _wrapEventTarget(target: string, integrationOptions: BrowserApiErrorsOptions): void {
+    const globalObject = WINDOW as unknown as Record<string, { prototype?: object }>;
     const proto = globalObject[target]?.prototype;
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     const that = this;
     // eslint-disable-next-line no-prototype-builtins
-    if (!proto?.hasOwnProperty?.("addEventListener")) {
+    if (!proto?.hasOwnProperty?.('addEventListener')) {
       return;
     }
 
     fill(
       proto,
-      "addEventListener",
+      'addEventListener',
       function (
-        original: (
-          type: string,
-          listener: EventListenerOrEventListenerObject,
-          options?: boolean | AddEventListenerOptions,
-        ) => void,
-      ): (
-        ...args: Parameters<typeof WINDOW.addEventListener>
-      ) => ReturnType<typeof WINDOW.addEventListener> {
+        original: (type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions) => void
+      ): (...args: Parameters<typeof WINDOW.addEventListener>) => ReturnType<typeof WINDOW.addEventListener> {
         return function (
           this: unknown,
           eventName: string,
           fn: EventListenerOrEventListenerObject,
-          options?: boolean | AddEventListenerOptions,
+          options?: boolean | AddEventListenerOptions
         ): void {
           try {
             if (that.isEventListenerObject(fn)) {
@@ -231,12 +196,12 @@ class BrowserApiError extends ErrorBase {
               fn.handleEvent = wrap(fn.handleEvent, {
                 mechanism: {
                   data: {
-                    function: "handleEvent",
+                    function: 'handleEvent',
                     handler: getFunctionName(fn),
                     target,
                   },
                   handled: false,
-                  type: "auto.browser.browserapierrors.handleEvent",
+                  type: 'auto.browser.browserapierrors.handleEvent',
                 },
                 reportCallback: that.reportCallback,
               });
@@ -254,88 +219,62 @@ class BrowserApiError extends ErrorBase {
             wrap(fn, {
               mechanism: {
                 data: {
-                  function: "addEventListener",
+                  function: 'addEventListener',
                   handler: getFunctionName(fn),
                   target,
                 },
                 handled: false,
-                type: "auto.browser.browserapierrors.addEventListener",
+                type: 'auto.browser.browserapierrors.addEventListener',
               },
               reportCallback: that.reportCallback,
             }),
             options,
           ]);
         };
-      },
+      }
     );
 
-    fill(
-      proto,
-      "removeEventListener",
-      function (
-        originalRemoveEventListener: (...args: any[]) => any,
-      ): (
-        this: unknown,
-        ...args: Parameters<typeof WINDOW.removeEventListener>
-      ) => ReturnType<typeof WINDOW.removeEventListener> {
-        return function (
-          this: unknown,
-          eventName: string,
-          fn: EventListenerOrEventListenerObject,
-          options?: boolean | EventListenerOptions,
-        ): void {
-          /**
-           * There are 2 possible scenarios here:
-           *
-           * 1. Someone passes a callback, which was attached prior to Sentry initialization, or by using unmodified
-           * method, eg. `document.addEventListener.call(el, name, handler). In this case, we treat this function
-           * as a pass-through, and call original `removeEventListener` with it.
-           *
-           * 2. Someone passes a callback, which was attached after Sentry was initialized, which means that it was using
-           * our wrapped version of `addEventListener`, which internally calls `wrap` helper.
-           * This helper "wraps" whole callback inside a try/catch statement, and attached appropriate metadata to it,
-           * in order for us to make a distinction between wrapped/non-wrapped functions possible.
-           * If a function was wrapped, it has additional property of `__ors_wrapped__`, holding the handler.
-           *
-           * When someone adds a handler prior to initialization, and then do it again, but after,
-           * then we have to detach both of them. Otherwise, if we'd detach only wrapped one, it'd be impossible
-           * to get rid of the initial handler and it'd stick there forever.
-           */
-          try {
-            const originalEventHandler = (fn as WrappedFunction)
-              .__ors_wrapped__;
-            if (originalEventHandler) {
-              originalRemoveEventListener.call(
-                this,
-                eventName,
-                originalEventHandler,
-                options,
-              );
-            }
-          } catch {
-            // ignore, accessing __ors_wrapped__ will throw in some Selenium environments
+    fill(proto, 'removeEventListener', function (originalRemoveEventListener: (...args: any[]) => any): (
+      this: unknown,
+      ...args: Parameters<typeof WINDOW.removeEventListener>
+    ) => ReturnType<typeof WINDOW.removeEventListener> {
+      return function (this: unknown, eventName: string, fn: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void {
+        /**
+         * There are 2 possible scenarios here:
+         *
+         * 1. Someone passes a callback, which was attached prior to Sentry initialization, or by using unmodified
+         * method, eg. `document.addEventListener.call(el, name, handler). In this case, we treat this function
+         * as a pass-through, and call original `removeEventListener` with it.
+         *
+         * 2. Someone passes a callback, which was attached after Sentry was initialized, which means that it was using
+         * our wrapped version of `addEventListener`, which internally calls `wrap` helper.
+         * This helper "wraps" whole callback inside a try/catch statement, and attached appropriate metadata to it,
+         * in order for us to make a distinction between wrapped/non-wrapped functions possible.
+         * If a function was wrapped, it has additional property of `__ors_wrapped__`, holding the handler.
+         *
+         * When someone adds a handler prior to initialization, and then do it again, but after,
+         * then we have to detach both of them. Otherwise, if we'd detach only wrapped one, it'd be impossible
+         * to get rid of the initial handler and it'd stick there forever.
+         */
+        try {
+          const originalEventHandler = (fn as WrappedFunction).__ors_wrapped__;
+          if (originalEventHandler) {
+            originalRemoveEventListener.call(this, eventName, originalEventHandler, options);
           }
-          return originalRemoveEventListener.call(this, eventName, fn, options);
-        };
-      },
-    );
+        } catch {
+          // ignore, accessing __ors_wrapped__ will throw in some Selenium environments
+        }
+        return originalRemoveEventListener.call(this, eventName, fn, options);
+      };
+    });
   }
 
   isEventListenerObject(obj: unknown): obj is EventListenerObject {
-    return typeof (obj as EventListenerObject).handleEvent === "function";
+    return typeof (obj as EventListenerObject).handleEvent === 'function';
   }
 
-  unregisterOriginalCallback(
-    target: unknown,
-    eventName: string,
-    fn: EventListenerOrEventListenerObject,
-  ): void {
-    if (
-      target &&
-      typeof target === "object" &&
-      "removeEventListener" in target &&
-      typeof target.removeEventListener === "function"
-    ) {
+  unregisterOriginalCallback(target: unknown, eventName: string, fn: EventListenerOrEventListenerObject): void {
+    if (target && typeof target === 'object' && 'removeEventListener' in target && typeof target.removeEventListener === 'function') {
       target.removeEventListener(eventName, fn);
     }
   }

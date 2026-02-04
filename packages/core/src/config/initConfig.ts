@@ -1,16 +1,16 @@
-import type { InitConfigData, ISampleData } from "@/types/init";
-import pkg from "../../package.json";
+import type { InitConfigData, ISampleData } from '@/types/init';
+import pkg from '../../package.json';
 
 const initConfigData: InitConfigData = {
   sdkVersion: pkg.version,
   isInit: false,
   orsDataInfo: {
     sessionInfo: {
-      sessionId: "",
+      sessionId: '',
       sessionStartTime: 0,
     }, // session的信息
-    FMPTime: "",
-    actionId: "",
+    FMPTime: '',
+    actionId: '',
     resourceErrorList: [], // 加载资源错误url的资源列表
     resErrorList: [],
   },
@@ -38,7 +38,7 @@ const initConfigData: InitConfigData = {
     blResUrl: [],
     blJsErrMsg: [],
     featureFlags: {
-      sdkGzipSwitch: "A",
+      sdkGzipSwitch: 'A',
     },
   } as ISampleData,
   configData: {
@@ -57,7 +57,7 @@ const initConfigData: InitConfigData = {
   integrations: {},
   ubsData: {
     // ubs需要的data数据
-    scenes: "",
+    scenes: '',
   },
   customInfo: {},
   nativeData: null,

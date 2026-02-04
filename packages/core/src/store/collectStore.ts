@@ -1,4 +1,4 @@
-import { CollectStoreConfigType, CollectStoreType } from "@/types/init";
+import { CollectStoreConfigType, CollectStoreType } from '@/types/init';
 
 /**
  * 用户行为信息存储

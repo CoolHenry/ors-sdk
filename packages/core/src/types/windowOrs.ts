@@ -1,6 +1,6 @@
-import * as customApi from "@/api"; // 自定义上报字段
-import { initObserve, recordFMPTime } from "@/init";
-import type { ISampleData } from "@/types/init";
+import * as customApi from '@/api'; // 自定义上报字段
+import { initObserve, recordFMPTime } from '@/init';
+import type { ISampleData } from '@/types/init';
 export interface WindowOrsType {
   initObserve?: typeof initObserve;
   recordFMPTime?: typeof recordFMPTime;

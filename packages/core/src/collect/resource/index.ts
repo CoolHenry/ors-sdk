@@ -1,13 +1,13 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-import Base from "../base";
-import urlParse from "@/utils/urlParse";
-import getrandomNumber from "@/utils/getrandomNumber";
-import timeTranslate from "@/utils/timeTranslate";
-import highTime from "@/utils/highTime";
-import { logReport, eventBus, SamplingManager } from "@/config";
-import { userInfoStore, windowOrs, Breadcrumbs } from "@/store";
-import { isAllTrue, needSkipUrlCollect } from "@/utils";
-import { Logger } from "@/utils/common";
+import Base from '../base';
+import urlParse from '@/utils/urlParse';
+import getrandomNumber from '@/utils/getrandomNumber';
+import timeTranslate from '@/utils/timeTranslate';
+import highTime from '@/utils/highTime';
+import { logReport, eventBus, SamplingManager } from '@/config';
+import { userInfoStore, windowOrs, Breadcrumbs } from '@/store';
+import { isAllTrue, needSkipUrlCollect } from '@/utils';
+import { Logger } from '@/utils/common';
 import type {
   ActionInfoType,
   SessionParams,
@@ -15,9 +15,9 @@ import type {
   ResourceAndRequestInfoType,
   SessionInfosType,
   ViewAttrsType,
-} from "@/types/init";
-import { MonitorDestroyReason } from "@/types/lifecycle";
-import { sdkLifeTimeEmitter } from "@/utils/mitt";
+} from '@/types/init';
+import { MonitorDestroyReason } from '@/types/lifecycle';
+import { sdkLifeTimeEmitter } from '@/utils/mitt';
 
 export class ResourceCollect extends Base {
   static instance: ResourceCollect;
@@ -31,9 +31,9 @@ export class ResourceCollect extends Base {
   }
 
   private monitorDestroy() {
-    sdkLifeTimeEmitter.on("monitorDestroy", (reason: MonitorDestroyReason) => {
+    sdkLifeTimeEmitter.on('monitorDestroy', (reason: MonitorDestroyReason) => {
       switch (reason) {
-        case "sdk:teardown":
+        case 'sdk:teardown':
           this.destroyMonitor();
           break;
         default:
@@ -44,7 +44,7 @@ export class ResourceCollect extends Base {
   public static getInstance(params?: SessionParams) {
     if (!ResourceCollect.instance) {
       if (!params) {
-        Logger.warn("[ors-sdk] ResourceCollect not initialized");
+        Logger.warn('[ors-sdk] ResourceCollect not initialized');
       } else {
         ResourceCollect.instance = new ResourceCollect(params);
       }
@@ -56,15 +56,13 @@ export class ResourceCollect extends Base {
   public initMonitor() {
     try {
       if (!window.performance || !window.PerformanceObserver) {
-        console.warn(
-          "该浏览器不支持performance.getEntries 以及PerformanceObserver方法",
-        );
+        console.warn('该浏览器不支持performance.getEntries 以及PerformanceObserver方法');
         return;
       }
       // 设置资源观察器
       this.setupResourceObserver();
     } catch (error) {
-      logReport("initMonitor", error);
+      logReport('initMonitor', error);
     }
   }
 
@@ -77,9 +75,9 @@ export class ResourceCollect extends Base {
           this.handleResourceEntry(entry);
         });
       });
-      this.resourceObserver.observe({ type: "resource", buffered: true });
+      this.resourceObserver.observe({ type: 'resource', buffered: true });
     } catch (error) {
-      logReport("setupResourceObserver", error);
+      logReport('setupResourceObserver', error);
     }
   }
 
@@ -90,19 +88,16 @@ export class ResourceCollect extends Base {
         this.handleStaticResource(entry);
       }
     } catch (error) {
-      logReport("handleResourceEntry", error);
+      logReport('handleResourceEntry', error);
     }
   }
-  private isPerformanceResourceTiming(
-    entry: PerformanceEntry,
-  ): entry is PerformanceResourceTiming {
+  private isPerformanceResourceTiming(entry: PerformanceEntry): entry is PerformanceResourceTiming {
     return (
-      entry.entryType === "resource" &&
-      "initiatorType" in entry &&
-      typeof (entry as PerformanceResourceTiming).nextHopProtocol ===
-        "string" &&
-      entry.initiatorType !== "fetch" &&
-      entry.initiatorType !== "xmlhttprequest"
+      entry.entryType === 'resource' &&
+      'initiatorType' in entry &&
+      typeof (entry as PerformanceResourceTiming).nextHopProtocol === 'string' &&
+      entry.initiatorType !== 'fetch' &&
+      entry.initiatorType !== 'xmlhttprequest'
     );
   }
 
@@ -111,41 +106,38 @@ export class ResourceCollect extends Base {
     try {
       setTimeout(() => {
         const errorResList = windowOrs.orsDataInfo.resourceErrorList;
-        const failStaticResIndex = errorResList.findIndex(
-          (item: string) => item === entry.name,
-        );
+        const failStaticResIndex = errorResList.findIndex((item: string) => item === entry.name);
 
         if (failStaticResIndex !== -1) {
           const resourceData = this.handleResourceData(entry, {
-            method: "GET",
-            netType: "static",
+            method: 'GET',
+            netType: 'static',
             status: 404,
           });
           if (resourceData) {
             this.reportRequestData(resourceData);
           }
-          eventBus.emit("errorStaticRes", resourceData);
+          eventBus.emit('errorStaticRes', resourceData);
           windowOrs.orsDataInfo.resourceErrorList.splice(failStaticResIndex, 1);
           return;
         }
 
         const resourceData = this.handleResourceData(entry, {
-          method: "GET",
-          netType: "static",
+          method: 'GET',
+          netType: 'static',
         });
         if (resourceData) {
           this.reportRequestData(resourceData);
         }
       }, 50);
     } catch (error) {
-      logReport("handleStaticResource", error);
+      logReport('handleStaticResource', error);
     }
   }
 
   private reportRequestData(resourceData: ResourceAndRequestInfoType) {
     /** 根据采样率判断是否需要上报操作数据，如果需要就上报，否则只采集数据 */
-    const isRateDrop =
-      SamplingManager.decide({ rumType: "ors_resource" }) === "drop";
+    const isRateDrop = SamplingManager.decide({ rumType: 'ors_resource' }) === 'drop';
     if (isRateDrop) {
       // 采集的数据存入store
       Breadcrumbs.add(resourceData);
@@ -158,7 +150,7 @@ export class ResourceCollect extends Base {
     try {
       this.resourceObserver?.disconnect();
     } catch (error) {
-      logReport("destroyResourceMonitor", error);
+      logReport('destroyResourceMonitor', error);
     }
   }
 
@@ -170,25 +162,20 @@ export class ResourceCollect extends Base {
       netType: string;
       responseBodySize?: number | null;
       status?: number;
-    },
+    }
   ) {
     try {
-      Logger.log("[log][handleResourceData]:", item?.name, item, options);
+      Logger.log('[log][handleResourceData]:', item?.name, item, options);
       // 自身url的过滤
       if (item.name && needSkipUrlCollect(item.name, this.params)) return null;
-      const {
-        method = "GET",
-        netType = "static",
-        responseBodySize = 0,
-        status,
-      } = options || {};
+      const { method = 'GET', netType = 'static', responseBodySize = 0, status } = options || {};
       const urlObj = urlParse(item.name).getParse();
       const name = item.name.length > 256 ? item.name.slice(0, 256) : item.name;
       const userInfo = userInfoStore.get() as ActionInfoType;
       const sessionInfo: SessionInfosType = this.getSessionInfo();
       const viewAttrs: ViewAttrsType = windowOrs.orsViewAttrs;
       const resourceAndRequestEvent: ResourceAndRequestEventType = {
-        rumType: "ors_resource",
+        rumType: 'ors_resource',
         id: getrandomNumber(32),
         url: name,
         host: urlObj.Host,
@@ -202,28 +189,21 @@ export class ResourceCollect extends Base {
         size: item.decodedBodySize || responseBodySize,
         dns: timeTranslate(item.domainLookupEnd - item.domainLookupStart),
         tcp: timeTranslate(item.connectEnd - item.connectStart),
-        ssl:
-          item.secureConnectionStart === 0
-            ? 0
-            : timeTranslate(item.connectEnd - item.secureConnectionStart),
+        ssl: item.secureConnectionStart === 0 ? 0 : timeTranslate(item.connectEnd - item.secureConnectionStart),
         ttfb: timeTranslate(item.responseStart - item.requestStart),
         trans: timeTranslate(item.responseEnd - item.responseStart),
         firstbyte: timeTranslate(item.responseStart - item.domainLookupStart),
-        loadType: "network",
+        loadType: 'network',
         duration: timeTranslate(item.duration),
         request: timeTranslate(item.responseStart - item.requestStart),
-        response: isAllTrue(item.responseEnd, item.responseStart)
-          ? timeTranslate(item.responseEnd - item.responseStart)
-          : null,
+        response: isAllTrue(item.responseEnd, item.responseStart) ? timeTranslate(item.responseEnd - item.responseStart) : null,
         cache: timeTranslate(item.domainLookupStart - item.fetchStart),
         redirect: timeTranslate(item.redirectEnd - item.redirectStart),
         netType,
         nextHopProtocol: item?.nextHopProtocol,
-        sessionType: "user",
+        sessionType: 'user',
         resourceStartTime: highTime(performance.timeOrigin + item.startTime),
-        resourceEndTime: highTime(
-          performance.timeOrigin + item.startTime + item.duration,
-        ),
+        resourceEndTime: highTime(performance.timeOrigin + item.startTime + item.duration),
         resourceTiming: item,
       };
       const resourceData: ResourceAndRequestInfoType = {
@@ -239,7 +219,7 @@ export class ResourceCollect extends Base {
       }
       return resourceData;
     } catch (error) {
-      logReport("handleResourceData", error);
+      logReport('handleResourceData', error);
       return null;
     }
   }

@@ -1,5 +1,5 @@
-import trim from "./trim";
-import { logReport } from "@/config";
+import trim from './trim';
+import { logReport } from '@/config';
 
 /** 获取元素的文本内容
  *
@@ -13,12 +13,9 @@ import { logReport } from "@/config";
  * var button = document.getElementById('btn1'); // <button id='btn1'>test</button>
  * getElementContent(button,'button'); //=> test
  */
-function getElementContent(
-  element: { textContent: any; innerText: any; value: string },
-  tagName: string,
-) {
-  let textContent = "";
-  let element_content = "";
+function getElementContent(element: { textContent: any; innerText: any; value: string }, tagName: string) {
+  let textContent = '';
+  let element_content = '';
   if (element.textContent) {
     textContent = trim(element.textContent);
   } else if (element.innerText) {
@@ -26,14 +23,14 @@ function getElementContent(
   }
   if (textContent) {
     textContent = textContent
-      .replace(/[\r\n]/g, " ")
-      .replace(/[ ]+/g, " ")
+      .replace(/[\r\n]/g, ' ')
+      .replace(/[ ]+/g, ' ')
       .substring(0, 255);
   }
-  element_content = textContent || "";
+  element_content = textContent || '';
 
-  if (tagName === "input" || tagName === "INPUT") {
-    element_content = element.value || "";
+  if (tagName === 'input' || tagName === 'INPUT') {
+    element_content = element.value || '';
   }
   return element_content;
 }
@@ -47,19 +44,19 @@ function getElementContent(
  */
 function getElementsFromPoint(x: number, y: number) {
   try {
-    if (typeof document.elementsFromPoint === "function") {
+    if (typeof document.elementsFromPoint === 'function') {
       // 现代浏览器
       return document.elementsFromPoint(x, y);
-    } else if (typeof document.elementFromPoint === "function") {
+    } else if (typeof document.elementFromPoint === 'function') {
       // 用 elementFromPoint 模拟（Polyfill）
       return polyfillElementsFromPoint(x, y);
     } else {
       // 太老的浏览器，直接返回空数组
-      console.warn("elementsFromPoint 和 elementFromPoint 都不支持");
+      console.warn('elementsFromPoint 和 elementFromPoint 都不支持');
       return [];
     }
   } catch (error) {
-    logReport("getElementsFromPoint", error);
+    logReport('getElementsFromPoint', error);
     return [];
   }
 }
@@ -80,7 +77,7 @@ function polyfillElementsFromPoint(x: number, y: number) {
       });
 
       // 暂时禁用事件响应，让下一个元素可被选中
-      (el as HTMLElement).style.pointerEvents = "none";
+      (el as HTMLElement).style.pointerEvents = 'none';
     }
 
     // 恢复所有元素原有 pointer-events
@@ -93,7 +90,7 @@ function polyfillElementsFromPoint(x: number, y: number) {
 
     return elements;
   } catch (error) {
-    logReport("polyfillElementsFromPoint", error);
+    logReport('polyfillElementsFromPoint', error);
     return [];
   }
 }

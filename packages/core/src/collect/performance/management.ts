@@ -1,12 +1,11 @@
-import { logReport } from "@/config";
-import PerformanceCollect from ".";
+import { logReport } from '@/config';
+import PerformanceCollect from '.';
 
 export class PerformanceManagement {
   static instance: PerformanceManagement;
 
   private _performanceCollectList: PerformanceCollect[] = [];
-  private _performanceCollectListMapper: Record<string, PerformanceCollect> =
-    {};
+  private _performanceCollectListMapper: Record<string, PerformanceCollect> = {};
 
   //单例模式，对外界不可实例化
   // eslint-disable-next-line @typescript-eslint/no-empty-function
@@ -24,11 +23,9 @@ export class PerformanceManagement {
       if (!this._performanceCollectList.length) {
         return null;
       }
-      return this._performanceCollectList[
-        this._performanceCollectList.length - 1
-      ];
+      return this._performanceCollectList[this._performanceCollectList.length - 1];
     } catch (error) {
-      logReport("getLastPerformanceCollect", error);
+      logReport('getLastPerformanceCollect', error);
       return null;
     }
   }
@@ -38,16 +35,12 @@ export class PerformanceManagement {
 
   addPerformanceCollect(performanceCollect: PerformanceCollect) {
     try {
-      if (
-        performanceCollect.viewId &&
-        !this._performanceCollectListMapper[performanceCollect.viewId]
-      ) {
+      if (performanceCollect.viewId && !this._performanceCollectListMapper[performanceCollect.viewId]) {
         this._performanceCollectList.push(performanceCollect);
-        this._performanceCollectListMapper[performanceCollect.viewId] =
-          performanceCollect;
+        this._performanceCollectListMapper[performanceCollect.viewId] = performanceCollect;
       }
     } catch (error) {
-      logReport("addPerformanceCollect", error);
+      logReport('addPerformanceCollect', error);
     }
   }
   removePerformanceCollect(performanceCollect: PerformanceCollect) {
@@ -60,7 +53,7 @@ export class PerformanceManagement {
         }
       }
     } catch (error) {
-      logReport("removePerformanceCollect", error);
+      logReport('removePerformanceCollect', error);
     }
   }
   disconnectAllPerformanceCollect(endTime: number) {
@@ -71,7 +64,7 @@ export class PerformanceManagement {
       this._performanceCollectList = [];
       this._performanceCollectListMapper = {};
     } catch (error) {
-      logReport("disconncetAllPerformanceCollect", error);
+      logReport('disconncetAllPerformanceCollect', error);
     }
   }
 }

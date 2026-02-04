@@ -13,7 +13,7 @@
         "lib": [
             "ESNext",
             "DOM",
-            "DOM.Iterable",
+            "DOM.Iterable"
         ],
         "moduleResolution": "bundler",
         "strict": true,

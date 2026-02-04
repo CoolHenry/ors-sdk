@@ -1,11 +1,11 @@
-import ErrorBase from "./error";
-import { logReport } from "@/config";
-import type { ProjectInfoType, SessionParams } from "@/types/init";
-import { windowOrs } from "@/store/windowOrs";
-import { extractExceptionKeysForMessage } from "@/utils/object";
-import { isError, isErrorEvent, isErrorLike, isPlainObject } from "@/utils/is";
-import type { SeverityLevel, Mechanism } from "@/types/error";
-import { isString } from "@/utils/isType";
+import ErrorBase from './error';
+import { logReport } from '@/config';
+import type { ProjectInfoType, SessionParams } from '@/types/init';
+import { windowOrs } from '@/store/windowOrs';
+import { extractExceptionKeysForMessage } from '@/utils/object';
+import { isError, isErrorEvent, isErrorLike, isPlainObject } from '@/utils/is';
+import type { SeverityLevel, Mechanism } from '@/types/error';
+import { isString } from '@/utils/isType';
 /**
  * 手动捕获异常
  */
@@ -18,7 +18,7 @@ class CaptureError extends ErrorBase {
   public static getInstance(params?: SessionParams) {
     if (!CaptureError.instance) {
       if (!params) {
-        throw new Error("[ors-sdk] CaptureError not initialized");
+        throw new Error('[ors-sdk] CaptureError not initialized');
       }
       CaptureError.instance = new CaptureError(params);
     }
@@ -31,14 +31,14 @@ class CaptureError extends ErrorBase {
       projectInfo?: ProjectInfoType;
       errorType?: string;
       mechanism?: Mechanism;
-    } = {},
+    } = {}
   ) {
     try {
       const { message, error } = this.normalizeException(exception);
-      const errorSubType = options.errorType || "generic"; // 错误类型
+      const errorSubType = options.errorType || 'generic'; // 错误类型
       const mechanism = options.mechanism || {
         handled: true,
-        type: "generic",
+        type: 'generic',
       };
       // 根据采样率判断是否上报
       if (windowOrs.samplingConfig?.jsError) {
@@ -51,7 +51,7 @@ class CaptureError extends ErrorBase {
         });
       }
     } catch (err) {
-      logReport("captureException", err);
+      logReport('captureException', err);
     }
   }
 
@@ -95,7 +95,7 @@ class CaptureError extends ErrorBase {
         message: `${exception}`,
       };
     } catch (e) {
-      logReport("normalizeException", e);
+      logReport('normalizeException', e);
       return {
         message: `${exception}`,
       };
@@ -104,18 +104,15 @@ class CaptureError extends ErrorBase {
 
   getMessageForObject(exception: Record<string, unknown>): string {
     try {
-      if ("name" in exception && typeof exception.name === "string") {
+      if ('name' in exception && typeof exception.name === 'string') {
         let message = `'${exception.name}' captured as exception`;
 
-        if ("message" in exception && typeof exception.message === "string") {
+        if ('message' in exception && typeof exception.message === 'string') {
           message += ` with message '${exception.message}'`;
         }
 
         return message;
-      } else if (
-        "message" in exception &&
-        typeof exception.message === "string"
-      ) {
+      } else if ('message' in exception && typeof exception.message === 'string') {
         return exception.message;
       }
 
@@ -129,10 +126,10 @@ class CaptureError extends ErrorBase {
 
       const className = this.getObjectClassName(exception);
 
-      return `${className && className !== "Object" ? `'${className}'` : "Object"} captured as exception with keys: ${keys}`;
+      return `${className && className !== 'Object' ? `'${className}'` : 'Object'} captured as exception with keys: ${keys}`;
     } catch (e) {
-      logReport("getMessageForObject", e);
-      return "Object captured as exception with keys";
+      logReport('getMessageForObject', e);
+      return 'Object captured as exception with keys';
     }
   }
 
@@ -141,7 +138,7 @@ class CaptureError extends ErrorBase {
       const prototype: unknown | null = Object.getPrototypeOf(obj);
       return prototype ? prototype.constructor.name : undefined;
     } catch (e) {
-      logReport("getObjectClassName", e);
+      logReport('getObjectClassName', e);
       return undefined;
     }
   }
@@ -160,7 +157,7 @@ class CaptureError extends ErrorBase {
 
       return undefined;
     } catch (e) {
-      logReport("getErrorPropertyFromObject", e);
+      logReport('getErrorPropertyFromObject', e);
       return undefined;
     }
   }
@@ -173,29 +170,27 @@ class CaptureError extends ErrorBase {
       projectInfo?: ProjectInfoType;
       errorType?: string;
       mechanism?: Mechanism;
-    } = {},
+    } = {}
   ) {
     try {
-      const { message: msg, error } = isString(message)
-        ? { message }
-        : this.normalizeException(message);
+      const { message: msg, error } = isString(message) ? { message } : this.normalizeException(message);
       const mechanism = options.mechanism || {
         handled: true,
-        type: "generic",
+        type: 'generic',
       };
       // 根据采样率判断是否上报
       if (windowOrs.samplingConfig?.jsError) {
         this.recordError({
           message: msg,
           error,
-          errorSubType: options.errorType || "generic",
+          errorSubType: options.errorType || 'generic',
           mechanism,
           level: options?.level,
           projectInfoParams: options.projectInfo,
         });
       }
     } catch (e) {
-      logReport("captureMessage", e);
+      logReport('captureMessage', e);
     }
   }
 }

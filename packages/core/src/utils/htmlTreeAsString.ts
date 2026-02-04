@@ -1,6 +1,6 @@
-import { logReport } from "@/config";
-import { isString } from "@/utils/isType";
-import { getGlobalObject } from "./browserSupport";
+import { logReport } from '@/config';
+import { isString } from '@/utils/isType';
+import { getGlobalObject } from './browserSupport';
 
 const DEFAULT_MAX_STRING_LENGTH = 80;
 
@@ -9,13 +9,7 @@ type InternalGlobal = {
   console: Console;
   PerformanceObserver?: any;
   onerror?: {
-    (
-      event: object | string,
-      source?: string,
-      lineno?: number,
-      colno?: number,
-      error?: Error,
-    ): any;
+    (event: object | string, source?: string, lineno?: number, colno?: number, error?: Error): any;
     __SENTRY_INSTRUMENTED__?: true;
   };
   onunhandledrejection?: {
@@ -28,8 +22,8 @@ const GLOBAL_OBJ = getGlobalObject() as unknown as InternalGlobal;
 
 const WINDOW = GLOBAL_OBJ as typeof GLOBAL_OBJ &
   // document is not available in all browser environments (webworkers). We make it optional so you have to explicitly check for it
-  Omit<Window, "document"> &
-  Partial<Pick<Window, "document">>;
+  Omit<Window, 'document'> &
+  Partial<Pick<Window, 'document'>>;
 
 type SimpleNode = {
   parentNode: SimpleNode;
@@ -46,18 +40,18 @@ function _htmlElementAsString(el: unknown, keyAttrs?: string[]): string {
     const out = [];
 
     if (!elem?.tagName) {
-      return "";
+      return '';
     }
 
     // @ts-expect-error WINDOW has HTMLElement
     if (WINDOW.HTMLElement) {
       // If using the component name annotation plugin, this value may be available on the DOM node
       if (elem instanceof HTMLElement && elem.dataset) {
-        if (elem.dataset["sentryComponent"]) {
-          return elem.dataset["sentryComponent"];
+        if (elem.dataset['sentryComponent']) {
+          return elem.dataset['sentryComponent'];
         }
-        if (elem.dataset["sentryElement"]) {
-          return elem.dataset["sentryElement"];
+        if (elem.dataset['sentryElement']) {
+          return elem.dataset['sentryElement'];
         }
       }
     }
@@ -66,9 +60,7 @@ function _htmlElementAsString(el: unknown, keyAttrs?: string[]): string {
 
     // Pairs of attribute keys defined in `serializeAttribute` and their values on element.
     const keyAttrPairs = keyAttrs?.length
-      ? keyAttrs
-          .filter((keyAttr) => elem.getAttribute(keyAttr))
-          .map((keyAttr) => [keyAttr, elem.getAttribute(keyAttr)])
+      ? keyAttrs.filter((keyAttr) => elem.getAttribute(keyAttr)).map((keyAttr) => [keyAttr, elem.getAttribute(keyAttr)])
       : null;
 
     if (keyAttrPairs?.length) {
@@ -88,7 +80,7 @@ function _htmlElementAsString(el: unknown, keyAttrs?: string[]): string {
         }
       }
     }
-    const allowedAttrs = ["aria-label", "type", "name", "title", "alt"];
+    const allowedAttrs = ['aria-label', 'type', 'name', 'title', 'alt'];
     for (const k of allowedAttrs) {
       const attr = elem.getAttribute(k);
       if (attr) {
@@ -96,18 +88,15 @@ function _htmlElementAsString(el: unknown, keyAttrs?: string[]): string {
       }
     }
 
-    return out.join("");
+    return out.join('');
   } catch (error) {
-    logReport("_htmlElementAsString", error);
-    return "";
+    logReport('_htmlElementAsString', error);
+    return '';
   }
 }
-export function htmlTreeAsString(
-  elem: unknown,
-  options: string[] | { keyAttrs?: string[]; maxStringLength?: number } = {},
-): string {
+export function htmlTreeAsString(elem: unknown, options: string[] | { keyAttrs?: string[]; maxStringLength?: number } = {}): string {
   if (!elem) {
-    return "<unknown>";
+    return '<unknown>';
   }
 
   // try/catch both:
@@ -120,13 +109,11 @@ export function htmlTreeAsString(
     const out = [];
     let height = 0;
     let len = 0;
-    const separator = " > ";
+    const separator = ' > ';
     const sepLength = separator.length;
     let nextStr;
     const keyAttrs = Array.isArray(options) ? options : options.keyAttrs;
-    const maxStringLength =
-      (!Array.isArray(options) && options.maxStringLength) ||
-      DEFAULT_MAX_STRING_LENGTH;
+    const maxStringLength = (!Array.isArray(options) && options.maxStringLength) || DEFAULT_MAX_STRING_LENGTH;
 
     while (currentElem && height++ < MAX_TRAVERSE_HEIGHT) {
       nextStr = _htmlElementAsString(currentElem, keyAttrs);
@@ -134,11 +121,7 @@ export function htmlTreeAsString(
       // - nextStr is the 'html' element
       // - the length of the string that would be created exceeds maxStringLength
       //   (ignore this limit if we are on the first iteration)
-      if (
-        nextStr === "html" ||
-        (height > 1 &&
-          len + out.length * sepLength + nextStr.length >= maxStringLength)
-      ) {
+      if (nextStr === 'html' || (height > 1 && len + out.length * sepLength + nextStr.length >= maxStringLength)) {
         break;
       }
 
@@ -150,7 +133,7 @@ export function htmlTreeAsString(
 
     return out.reverse().join(separator);
   } catch (error) {
-    logReport("htmlTreeAsString", error);
-    return "<unknown>";
+    logReport('htmlTreeAsString', error);
+    return '<unknown>';
   }
 }

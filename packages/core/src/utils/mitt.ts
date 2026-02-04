@@ -1,14 +1,9 @@
-import ViewCollect from "@/collect/view";
-import { PathMatcherList } from "@/collect/view/pathMatcherList";
-import { AbstractPathMatcher, windowOrs } from "@/export";
-import {
-  JsErrorInfoType,
-  ISampleData,
-  SessionParams,
-  initObserveParams,
-} from "@/types/init";
-import { MonitorDestroyReason } from "@/types/lifecycle";
-import mitt from "mitt";
+import ViewCollect from '@/collect/view';
+import { PathMatcherList } from '@/collect/view/pathMatcherList';
+import { AbstractPathMatcher, windowOrs } from '@/export';
+import { JsErrorInfoType, ISampleData, SessionParams, initObserveParams } from '@/types/init';
+import { MonitorDestroyReason } from '@/types/lifecycle';
+import mitt from 'mitt';
 
 type SdkLifeTimeEventsType = {
   /** 初始化采集时，执行配置接口请求前 */

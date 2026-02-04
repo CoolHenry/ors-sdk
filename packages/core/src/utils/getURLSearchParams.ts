@@ -1,5 +1,5 @@
-import _decodeURIComponent from "./decodeURIComponent";
-import { logReport } from "@/config";
+import _decodeURIComponent from './decodeURIComponent';
+import { logReport } from '@/config';
 /**
  * 解析传入查询参数到一个含有查询参数列表的 key/value 对象
  * @param {string} queryString - 以问号开头的查询参数字符串
@@ -15,16 +15,16 @@ import { logReport } from "@/config";
 export default function getURLSearchParams(queryString: string): object {
   try {
     // 新增：确保输入是字符串
-    if (typeof queryString !== "string") {
+    if (typeof queryString !== 'string') {
       return {};
     }
-    queryString = queryString || "";
+    queryString = queryString || '';
     const args: Record<string, any> = {}; // Start with an empty object
-    const query = queryString.substring(1).split("#")[0]; // Get query string, minus '?'
-    const pairs = query.split("&"); // Split at ampersands
+    const query = queryString.substring(1).split('#')[0]; // Get query string, minus '?'
+    const pairs = query.split('&'); // Split at ampersands
     for (let i = 0; i < pairs.length; i++) {
       // For each fragment
-      const pos = pairs[i].indexOf("="); // Look for "name=value"
+      const pos = pairs[i].indexOf('='); // Look for "name=value"
       if (pos === -1) continue; // If not found, skip it
       let name = pairs[i].substring(0, pos); // Extract the name
       let value = pairs[i].substring(pos + 1); // Extract the value
@@ -34,7 +34,7 @@ export default function getURLSearchParams(queryString: string): object {
     }
     return args; // Return the parsed arguments
   } catch (error) {
-    logReport("getURLSearchParams", error);
+    logReport('getURLSearchParams', error);
     return {};
   }
 }

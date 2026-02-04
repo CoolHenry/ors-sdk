@@ -1,27 +1,24 @@
-import { sdkIntegrationEmitter } from "@/utils/mitt";
-import { AbstractPathMatcher } from "./pathMatcher";
-import { logReport } from "@/config";
+import { sdkIntegrationEmitter } from '@/utils/mitt';
+import { AbstractPathMatcher } from './pathMatcher';
+import { logReport } from '@/config';
 
 /** 支持微前端框架下的多个PathMatcher */
 export class PathMatcherList {
   private _pathMatcherList: AbstractPathMatcher[];
   constructor() {
     this._pathMatcherList = [];
-    sdkIntegrationEmitter.on("removePathMatcher", this.removePathMatcher);
+    sdkIntegrationEmitter.on('removePathMatcher', this.removePathMatcher);
   }
 
   //最后新增的pathMatcher优先级更高
   addPathMatcher = (matcher: AbstractPathMatcher) => {
     try {
-      if (
-        matcher.key &&
-        this._pathMatcherList.some((i) => i.key === matcher.key)
-      ) {
+      if (matcher.key && this._pathMatcherList.some((i) => i.key === matcher.key)) {
         return;
       }
       this._pathMatcherList.unshift(matcher);
     } catch (error) {
-      logReport("addPathMatcher", error);
+      logReport('addPathMatcher', error);
       return;
     }
   };
@@ -38,7 +35,7 @@ export class PathMatcherList {
         return item !== matcher;
       });
     } catch (error) {
-      logReport("removePathMatcher", error);
+      logReport('removePathMatcher', error);
       return;
     }
   };
@@ -53,7 +50,7 @@ export class PathMatcherList {
       }
       return undefined;
     } catch (error) {
-      logReport("matchPath", error);
+      logReport('matchPath', error);
       return;
     }
   };

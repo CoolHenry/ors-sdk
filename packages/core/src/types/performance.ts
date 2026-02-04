@@ -1,4 +1,4 @@
-import { SessionParams } from "@/types/init";
+import { SessionParams } from '@/types/init';
 
 export interface TempleObjType {
   name: string;
@@ -55,7 +55,7 @@ export interface PageLoadVitalsData extends NavigationVitalsData {
 }
 
 export interface PerformanceInitParams {
-  pageType: "pageload" | "navigation";
+  pageType: 'pageload' | 'navigation';
   viewId: string;
   projectConfig: SessionParams;
 }
@@ -67,11 +67,11 @@ export interface ObservePerformanceOptions {
 
 // 在type文件中定义枚举
 export enum VitalsName {
-  FP = "FP",
-  FCP = "FCP",
-  LCP = "LCP",
-  INP = "INP",
-  FID = "FID",
-  CLS = "CLS",
-  TTFB = "TTFB",
+  FP = 'FP',
+  FCP = 'FCP',
+  LCP = 'LCP',
+  INP = 'INP',
+  FID = 'FID',
+  CLS = 'CLS',
+  TTFB = 'TTFB',
 }

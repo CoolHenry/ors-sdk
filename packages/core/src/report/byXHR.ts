@@ -1,1 +1,1 @@
-export { XHR } from "@/config/logReport";
+export { XHR } from '@/config/logReport';

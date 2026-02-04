@@ -1,27 +1,77 @@
 {
-  "name": "@ors-sdk/react",
-  "version": "0.1.0",
-  "description": "React integration for ORS SDK",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
-  "scripts": {
-    "build": "tsc",
-    "dev": "tsc -w",
-    "test": "jest"
-  },
-  "dependencies": {
-    "@ors-sdk/core": "^0.1.0",
-    "react": "^18.0.0"
-  },
-  "peerDependencies": {
-    "react": "^16.8.0 || ^17.0.0 || ^18.0.0"
-  },
-  "keywords": [
-    "react",
-    "sentry",
-    "error",
-    "monitoring"
-  ],
-  "author": "",
-  "license": "MIT"
+    "name": "@ors-sdk/react",
+    "version": "1.3.7-beta.5",
+    "description": "ORS SDK react platform support",
+    "type": "module",
+    "main": "./lib/index.umd.js",
+    "module": "./lib/index.esm.js",
+    "types": "./lib/index.d.ts",
+    "files": [
+        "lib",
+        "package.json"
+    ],
+    "scripts": {
+        "dev": "cross-env NODE_ENV=dev rollup -w -c && tsc --watch",
+        "build:debug": "cross-env NODE_ENV=dev DEBUG_ENV=true rollup -w -c && tsc --watch",
+        "build:dev": "cross-env NODE_ENV=dev rollup -c",
+        "build:prod": "cross-env NODE_ENV=prod rollup -c",
+        "lint": "eslint src && tsc --noEmit",
+        "test": "cross-env NODE_ENV=test jest",
+        "test:coverage": "cross-env NODE_ENV=test jest --coverage"
+    },
+    "devDependencies": {
+        "@babel/core": "^7.22.1",
+        "@babel/preset-env": "^7.22.4",
+        "@rollup/plugin-babel": "^6.0.3",
+        "@rollup/plugin-commonjs": "^25.0.0",
+        "@rollup/plugin-json": "^6.0.0",
+        "@rollup/plugin-node-resolve": "^15.1.0",
+        "@rollup/plugin-replace": "^6.0.2",
+        "@rollup/plugin-typescript": "^11.1.1",
+        "@types/figlet": "^1.5.6",
+        "@types/fs-extra": "^11.0.1",
+        "@types/inquirer": "^9.0.3",
+        "@types/node": "^20.2.5",
+        "@types/react": "^19.1.6",
+        "@types/semver": "^7.5.0",
+        "cross-env": "^7.0.3",
+        "dotenv": "^16.3.1",
+        "fs": "0.0.1-security",
+        "http-proxy-middleware": "^3.0.0",
+        "jsdom": "^22.1.0",
+        "path": "^0.12.7",
+        "rollup": "^3.23.0",
+        "rollup-plugin-brotli": "^3.1.0",
+        "rollup-plugin-copy": "^3.5.0",
+        "rollup-plugin-delete": "^2.0.0",
+        "rollup-plugin-dts": "^6.2.1",
+        "rollup-plugin-express-proxy": "^1.0.4",
+        "rollup-plugin-gproto": "^1.0.1",
+        "rollup-plugin-replace": "^2.2.0",
+        "rollup-plugin-terser": "^7.0.2",
+        "typescript": "^5.1.3"
+    },
+    "peerDependencies": {
+        "react": ">=16"
+    },
+    "peerDependenciesMeta": {
+        "react": {
+            "optional": true
+        }
+    },
+    "engines": {
+        "node": ">=16.19.0"
+    },
+    "dependencies": {
+        "@ors-sdk/web": "workspace:*",
+        "flatted": "^3.3.3",
+        "idb": "^8.0.3",
+        "md5-es": "^1.8.2",
+        "path-to-regexp": "^3.3.0",
+        "performance-polyfill": "^0.0.3",
+        "polyfill-elements-from-point": "^1.0.4",
+        "protobufjs": "^6.11.4",
+        "web-vitals": "^3.5.2"
+    },
+    "packageManager": "pnpm@10.11.0"
 }

@@ -1,9 +1,9 @@
-import { gzipSync, strToU8 } from "fflate";
-import { Logger } from "./common";
-import { logReport } from "@/config";
+import { gzipSync, strToU8 } from 'fflate';
+import { Logger } from './common';
+import { logReport } from '@/config';
 
 export default function tryGzip(data: Record<string, any>) {
-  let strData = "";
+  let strData = '';
   try {
     strData = JSON.stringify(data);
     const result = gzipSync(strToU8(strData));
@@ -12,8 +12,8 @@ export default function tryGzip(data: Record<string, any>) {
       gzip: true,
     };
   } catch (error) {
-    Logger.log("[log][gzip error]", error);
-    logReport("tryGzip", error);
+    Logger.log('[log][gzip error]', error);
+    logReport('tryGzip', error);
     return {
       data: strData,
       gzip: false,

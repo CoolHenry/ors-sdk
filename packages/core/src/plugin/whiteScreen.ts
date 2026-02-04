@@ -1,8 +1,8 @@
-import type { Callback, whiteScreenOptions } from "@/types/whiteScreen";
-import { logReport } from "@/config";
-import { elementFun } from "@/utils";
-import { windowOrs } from "@/store";
-import { Logger } from "@/utils/common";
+import type { Callback, whiteScreenOptions } from '@/types/whiteScreen';
+import { logReport } from '@/config';
+import { elementFun } from '@/utils';
+import { windowOrs } from '@/store';
+import { Logger } from '@/utils/common';
 
 // 获取全局变量
 export function getGlobal(): Window {
@@ -17,13 +17,10 @@ export function getGlobalSupport() {
 
 function debounce(
   func: {
-    (
-      callback: Callback,
-      { skeletonProject, whiteBoxElements }: whiteScreenOptions,
-    ): void;
+    (callback: Callback, { skeletonProject, whiteBoxElements }: whiteScreenOptions): void;
     apply?: any;
   },
-  wait: number | undefined,
+  wait: number | undefined
 ) {
   let timeoutId: any = null;
   return function (...args: any) {
@@ -49,10 +46,7 @@ const _support = getGlobalSupport();
  * @param {array} whiteBoxElements - 容器列表，默认值为['html', 'body', '#app', '#root']
  */
 
-function whiteScreenMonitor(
-  callback: Callback,
-  { skeletonProject, whiteBoxElements }: whiteScreenOptions,
-) {
+function whiteScreenMonitor(callback: Callback, { skeletonProject, whiteBoxElements }: whiteScreenOptions) {
   try {
     let _whiteLoopNum = 0;
     const _skeletonInitList: any = []; // 存储初次采样点
@@ -61,18 +55,18 @@ function whiteScreenMonitor(
     let timer: any = null;
     const maxRetryTime = 5;
     let retryTime = 0;
-    Logger.log("[log][执行了白屏]");
+    Logger.log('[log][执行了白屏]');
     // 项目有骨架屏
     if (skeletonProject) {
-      if (document.readyState != "complete") {
+      if (document.readyState != 'complete') {
         idleCallback();
       }
     } else {
       // 页面加载完毕
-      if (document.readyState === "complete") {
+      if (document.readyState === 'complete') {
         idleCallback();
       } else {
-        _global.addEventListener("load", idleCallback);
+        _global.addEventListener('load', idleCallback);
       }
     }
 
@@ -81,24 +75,21 @@ function whiteScreenMonitor(
     function getSelector(element: any) {
       try {
         if (element?.id) {
-          return "#" + element.id;
-        } else if (
-          element?.className &&
-          typeof element?.className === "string"
-        ) {
+          return '#' + element.id;
+        } else if (element?.className && typeof element?.className === 'string') {
           // div home => div.home
           return (
-            "." +
+            '.' +
             element.className
-              .split(" ")
+              .split(' ')
               .filter((item: any) => !!item)
-              .join(".")
+              .join('.')
           );
         } else {
-          return element?.nodeName ? element?.nodeName.toLowerCase() : "";
+          return element?.nodeName ? element?.nodeName.toLowerCase() : '';
         }
       } catch (error) {
-        logReport("whiteScreenGetSelector", error);
+        logReport('whiteScreenGetSelector', error);
       }
     }
 
@@ -108,14 +99,12 @@ function whiteScreenMonitor(
       try {
         const selector = getSelector(element);
         if (skeletonProject) {
-          _whiteLoopNum
-            ? _skeletonNowList.push(selector)
-            : _skeletonInitList.push(selector);
+          _whiteLoopNum ? _skeletonNowList.push(selector) : _skeletonInitList.push(selector);
         }
-        Logger.log("[log][whiteScreen selector]:", selector, whiteBoxElements);
+        Logger.log('[log][whiteScreen selector]:', selector, whiteBoxElements);
         return whiteBoxElements?.indexOf(selector) != -1;
       } catch (error) {
-        logReport("whiteScreenIsContainer", error);
+        logReport('whiteScreenIsContainer', error);
       }
       return;
     }
@@ -126,14 +115,8 @@ function whiteScreenMonitor(
       try {
         let emptyPoints = 0;
         for (let i = 1; i <= 9; i++) {
-          const xElements = elementFun.getElementsFromPoint(
-            (_global.innerWidth * i) / 10,
-            _global.innerHeight / 2,
-          );
-          const yElements = elementFun.getElementsFromPoint(
-            _global.innerWidth / 2,
-            (_global.innerHeight * i) / 10,
-          );
+          const xElements = elementFun.getElementsFromPoint((_global.innerWidth * i) / 10, _global.innerHeight / 2);
+          const yElements = elementFun.getElementsFromPoint(_global.innerWidth / 2, (_global.innerHeight * i) / 10);
 
           if (isContainer(xElements[0] as HTMLElement)) emptyPoints++;
           // 中心点只计算一次
@@ -144,30 +127,30 @@ function whiteScreenMonitor(
 
         // 页面正常渲染，停止轮训
         if (emptyPoints != 17) {
-          Logger.log("[log][页面检测ok]:");
+          Logger.log('[log][页面检测ok]:');
           if (skeletonProject) {
             // 第一次不比较
             if (!_whiteLoopNum) return openWhiteLoop();
             // 比较前后dom是否一致
             if (_skeletonNowList.join() == _skeletonInitList.join())
               return callback({
-                status: "error",
+                status: 'error',
               });
           }
 
           if (timer) clearTimeout(timer);
           return callback({
-            status: "ok",
+            status: 'ok',
           });
         } else {
-          Logger.log("[log][_support_support1]:", _support);
+          Logger.log('[log][_support_support1]:', _support);
           // 开启轮训
           if (++retryTime > maxRetryTime) {
-            Logger.log("[log][页面白屏检测超过最大次数，可判定为白屏]");
+            Logger.log('[log][页面白屏检测超过最大次数，可判定为白屏]');
             // 这里可以做一些监控上报之类的事情
             clearTimeout(timer);
             return callback({
-              status: "error",
+              status: 'error',
             });
           }
           if (!timer) {
@@ -178,7 +161,7 @@ function whiteScreenMonitor(
           }
         }
       } catch (error) {
-        logReport("whiteScreenSampling", error);
+        logReport('whiteScreenSampling', error);
       }
     }
 
@@ -196,14 +179,14 @@ function whiteScreenMonitor(
           idleCallback();
         }, 1000);
       } catch (error) {
-        logReport("whiteScreenOpenWhiteLoop", error);
+        logReport('whiteScreenOpenWhiteLoop', error);
       }
     }
 
     // eslint-disable-next-line no-inner-declarations
     function idleCallback() {
       try {
-        if ("requestIdleCallback" in _global) {
+        if ('requestIdleCallback' in _global) {
           requestIdleCallback((deadline) => {
             // timeRemaining：表示当前空闲时间的剩余时间  触发机制
             if (deadline.timeRemaining() > 0) {
@@ -217,11 +200,11 @@ function whiteScreenMonitor(
           sampling();
         }
       } catch (error) {
-        logReport("whiteScreenIdleCallback", error);
+        logReport('whiteScreenIdleCallback', error);
       }
     }
   } catch (error) {
-    logReport("whiteScreenMonitor", error);
+    logReport('whiteScreenMonitor', error);
   }
 }
 

@@ -1,4 +1,4 @@
-import type { UserAttrsInfo } from "@/types/init";
+import type { UserAttrsInfo } from '@/types/init';
 
 /**
  * 用户行为信息存储，包括userId,userEmail
@@ -7,13 +7,13 @@ class UserInfoStore {
   private userInfo: UserAttrsInfo;
   constructor() {
     this.userInfo = {
-      userId: "",
+      userId: '',
       isSign: 0,
-      userEmail: "",
+      userEmail: '',
     };
   }
   set<K extends keyof UserAttrsInfo>(key: K, value: UserAttrsInfo[K]) {
-    if (key === "userId") {
+    if (key === 'userId') {
       this.userInfo.isSign = value ? 1 : 0;
     }
     this.userInfo[key] = value;
@@ -23,16 +23,16 @@ class UserInfoStore {
   }
   clear(key?: keyof UserAttrsInfo) {
     if (key) {
-      if (key === "userId" || key === "isSign") {
+      if (key === 'userId' || key === 'isSign') {
         this.userInfo.isSign = 0;
       } else {
-        this.userInfo[key] = "";
+        this.userInfo[key] = '';
       }
     } else {
       this.userInfo = {
-        userId: "",
+        userId: '',
         isSign: 0,
-        userEmail: "",
+        userEmail: '',
       };
     }
   }

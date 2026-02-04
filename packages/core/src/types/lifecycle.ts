@@ -1,1 +1,1 @@
-export type MonitorDestroyReason = "sdk:teardown";
+export type MonitorDestroyReason = 'sdk:teardown';

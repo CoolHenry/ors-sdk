@@ -1,18 +1,13 @@
-import {
-  ProjectInfoType,
-  SessionParams,
-  CollectStoreType,
-  isJsErrorWithProject,
-} from "@/types/init";
-import { XHR } from "./byXHR";
-import ByNavigator from "./byNavigator";
-import { windowOrs } from "@/store/windowOrs";
-import { logReport, getEntity, SamplingManager } from "@/config";
-import { EventFilter } from "@/utils/event";
-import { CollectStore } from "@/store";
-import DataHandle from "../dataHandle";
-import pkg from "../../package.json";
-import { deviceInfo } from "@/utils/deviceInfo";
+import { ProjectInfoType, SessionParams, CollectStoreType, isJsErrorWithProject } from '@/types/init';
+import { XHR } from './byXHR';
+import ByNavigator from './byNavigator';
+import { windowOrs } from '@/store/windowOrs';
+import { logReport, getEntity, SamplingManager } from '@/config';
+import { EventFilter } from '@/utils/event';
+import { CollectStore } from '@/store';
+import DataHandle from '../dataHandle';
+import pkg from '../../package.json';
+import { deviceInfo } from '@/utils/deviceInfo';
 
 interface ReportClientParams {
   sessionParams: SessionParams;
@@ -26,12 +21,7 @@ export class ReportClient {
   private sessionParams: SessionParams;
   private reportGzipUrl: string;
   private reportUrl: string;
-  constructor({
-    sessionParams,
-    webGroupId,
-    server,
-    entity,
-  }: ReportClientParams) {
+  constructor({ sessionParams, webGroupId, server, entity }: ReportClientParams) {
     this.sessionParams = sessionParams;
     this.webGroupId = webGroupId;
     const serverOrigin = server || getEntity(entity);
@@ -54,16 +44,13 @@ export class ReportClient {
       xhr.toReport({
         url: this.reportUrl,
         // gzip默认是开启的，只有明确指定为A（关闭）的时候才会关闭
-        gzipUrl:
-          windowOrs.samplingConfig?.featureFlags?.sdkGzipSwitch !== "A"
-            ? this.reportGzipUrl
-            : "",
+        gzipUrl: windowOrs.samplingConfig?.featureFlags?.sdkGzipSwitch !== 'A' ? this.reportGzipUrl : '',
         data,
         accessNo: appInfo?.accessNo,
         webGroupId: projectInfo?.projectId || this.webGroupId,
       });
     } catch (error) {
-      logReport("sendData", error);
+      logReport('sendData', error);
     }
   }
 
@@ -79,7 +66,7 @@ export class ReportClient {
       const reportUrl = `${this.reportUrl}?accessNo=${appInfo?.accessNo || this.webGroupId}&webGroupId=${this.webGroupId}`;
       return navigator.toReport(reportUrl, concatData);
     } catch (error) {
-      logReport("sendBeaconData", error);
+      logReport('sendBeaconData', error);
       return false;
     }
   }
@@ -106,10 +93,7 @@ export class ReportClient {
             continue;
           }
 
-          const singleData: CollectStoreType | null = this.beforeSend(
-            this.sessionParams,
-            item,
-          );
+          const singleData: CollectStoreType | null = this.beforeSend(this.sessionParams, item);
           if (!singleData?.rumType) continue;
 
           // 检查是否有 projectInfo 字段
@@ -128,12 +112,12 @@ export class ReportClient {
             flushData[projectId].items.push(item);
           } else {
             // 没有 projectInfo 的数据，放入 mainApp 分组
-            if (!flushData["mainApp"]) {
-              flushData["mainApp"] = {
+            if (!flushData['mainApp']) {
+              flushData['mainApp'] = {
                 items: [],
               };
             }
-            flushData["mainApp"].items.push(item);
+            flushData['mainApp'].items.push(item);
           }
         }
         // 遍历所有分组发送数据
@@ -144,53 +128,44 @@ export class ReportClient {
             const dataHandle = this.getDataHandle(projectInfo);
             this.sendData(
               dataHandle.composeData(itemsData),
-              dataHandle.getProjectInfo(), // 可能需要根据 projectId 获取对应的项目信息
+              dataHandle.getProjectInfo() // 可能需要根据 projectId 获取对应的项目信息
             );
           }
         });
       });
       CollectStore.clear();
     } catch (error) {
-      logReport("flush", error);
+      logReport('flush', error);
     }
   }
 
   public getDataHandle(projectInfo?: ProjectInfoType) {
     const appInfo = windowOrs.nativeData;
     const { name, version, appId } = this.sessionParams;
-    const {
-      os,
-      osVersion,
-      osVersionMajor,
-      networkType,
-      screenSize,
-      browser,
-      browserVersion,
-      browserVersionMajor,
-    } = deviceInfo;
+    const { os, osVersion, osVersionMajor, networkType, screenSize, browser, browserVersion, browserVersionMajor } = deviceInfo;
     const dataHandle = new DataHandle({
       name: appInfo?.name || name,
       projectName: projectInfo?.name || name,
       projectVersion: projectInfo?.version || version,
       version: appInfo?.version || version,
       appId: appInfo?.appId || appId,
-      sdkName: "ors_web",
+      sdkName: 'ors_web',
       sdkVersion: pkg.version,
       osName: appInfo?.osName || os,
       osVersion: osVersion,
       osVersionMajor: osVersionMajor,
-      networkType: appInfo?.networkType || networkType || "", // 这个属性 webview里没有这个属性
+      networkType: appInfo?.networkType || networkType || '', // 这个属性 webview里没有这个属性
       deviceId: appInfo?.deviceId || windowOrs.userConfig.deviceId,
       deviceScreen: screenSize,
       browser: browser,
       browserVersion: browserVersion,
       browserVersionMajor: browserVersionMajor,
-      webviewId: appInfo?.webviewId || "",
-      orsSdkVersion: appInfo?.orsSdkVersion || "",
-      webviewStartTime: appInfo?.webviewStartTime || "",
-      deviceModel: appInfo?.deviceModel || "",
-      instanceId: appInfo?.instanceId || "",
-      createTime: appInfo?.createTime || "",
+      webviewId: appInfo?.webviewId || '',
+      orsSdkVersion: appInfo?.orsSdkVersion || '',
+      webviewStartTime: appInfo?.webviewStartTime || '',
+      deviceModel: appInfo?.deviceModel || '',
+      instanceId: appInfo?.instanceId || '',
+      createTime: appInfo?.createTime || '',
       customTags: windowOrs.customInfo,
       userAgent: navigator.userAgent,
     });
@@ -201,28 +176,24 @@ export class ReportClient {
   }
   public beforeSend(options: SessionParams, item: CollectStoreType) {
     try {
-      if (typeof options?.beforeSend === "function") {
+      if (typeof options?.beforeSend === 'function') {
         try {
           return options?.beforeSend(item);
         } catch (error) {
-          console.error("beforeSend error", error);
+          console.error('beforeSend error', error);
           return item;
         }
       } else {
         return item;
       }
     } catch (error) {
-      logReport("beforeSend", error);
+      logReport('beforeSend', error);
       return item;
     }
   }
 
   //上报前判断是否该上报
-  public shouldReportEvent(
-    options: SessionParams,
-    item: CollectStoreType,
-    projectInfo?: ProjectInfoType,
-  ) {
+  public shouldReportEvent(options: SessionParams, item: CollectStoreType, projectInfo?: ProjectInfoType) {
     try {
       //事件过滤
       if (EventFilter.shouldDrop(item, options)) {
@@ -231,18 +202,18 @@ export class ReportClient {
 
       //采样率过滤
       const decision = SamplingManager.decide(item);
-      if (decision === "unready") {
+      if (decision === 'unready') {
         const collectData = projectInfo ? { ...item, projectInfo } : item;
         CollectStore.add(collectData);
         return false;
       }
-      if (decision === "drop") {
+      if (decision === 'drop') {
         return false;
       }
 
       return true;
     } catch (error) {
-      logReport("shouldReportEvent", error);
+      logReport('shouldReportEvent', error);
       return false;
     }
   }
@@ -255,33 +226,26 @@ export const mergeDuplicateViewData = (data: readonly CollectStoreType[]) => {
       return data;
     }
     // 判断是否为ors_view且pageload
-    const isPageload = (i: { rumType: string; viewSubType: string }) =>
-      i?.rumType === "ors_view" && i?.viewSubType === "pageload";
+    const isPageload = (i: { rumType: string; viewSubType: string }) => i?.rumType === 'ors_view' && i?.viewSubType === 'pageload';
 
     // ors_view且pageload数据
     const pageLoadList = data.filter(isPageload);
 
     // 判断是否为ors_view且navigation
-    const isNavigation = (i: { rumType: string; viewSubType: string }) =>
-      i.rumType === "ors_view" && i.viewSubType === "navigation";
+    const isNavigation = (i: { rumType: string; viewSubType: string }) => i.rumType === 'ors_view' && i.viewSubType === 'navigation';
 
     // ors_view且navigation数据
     const navigationList = data.filter(isNavigation);
 
     const duplicatePageLoadList = getLastOfDuplicatePageload(pageLoadList);
-    const duplicateNavigationList =
-      getLastOfDuplicateNavigationAndOthersNavigation(navigationList);
+    const duplicateNavigationList = getLastOfDuplicateNavigationAndOthersNavigation(navigationList);
 
     // 判断是否为ors_view且navigation
     const othersList = data.filter((e) => !isPageload(e) && !isNavigation(e));
 
-    return [
-      ...duplicatePageLoadList,
-      ...duplicateNavigationList,
-      ...othersList,
-    ];
+    return [...duplicatePageLoadList, ...duplicateNavigationList, ...othersList];
   } catch (error) {
-    logReport("mergeDuplicateViewData", error);
+    logReport('mergeDuplicateViewData', error);
     return data;
   }
 };
@@ -298,15 +262,13 @@ export const getLastOfDuplicatePageload = (data: CollectStoreType[]) => {
 
     return [lastPageLoadList];
   } catch (error) {
-    logReport("getLastOfDuplicatePageload", error);
+    logReport('getLastOfDuplicatePageload', error);
     return data;
   }
 };
 
 // 过滤出多条rumType为ors_view且viewSubType为navigation且eventId和startTime相同的数据中最后一条与其他不重复navigation数据合并
-export const getLastOfDuplicateNavigationAndOthersNavigation = (
-  data: CollectStoreType[],
-) => {
+export const getLastOfDuplicateNavigationAndOthersNavigation = (data: CollectStoreType[]) => {
   try {
     // 只有当多条navigation时才进行处理
     if (data.length <= 1) {
@@ -316,7 +278,7 @@ export const getLastOfDuplicateNavigationAndOthersNavigation = (
     const map = new Map<string, { last: any; count: number }>();
 
     for (const item of data) {
-      const key = `${item.viewId ?? ""}_${item.viewStartTime ?? ""}`;
+      const key = `${item.viewId ?? ''}_${item.viewStartTime ?? ''}`;
       const entry = map.get(key);
       if (entry) {
         // 已存在：增加计数并覆盖 last（保证最后一条被保留）
@@ -337,7 +299,7 @@ export const getLastOfDuplicateNavigationAndOthersNavigation = (
 
     return result;
   } catch (error) {
-    logReport("getLastOfDuplicateNavigationAndOthersNavigation", error);
+    logReport('getLastOfDuplicateNavigationAndOthersNavigation', error);
     return data;
   }
 };
