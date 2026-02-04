@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ORS SDK Example</title>
+</head>
+<body>
+  <h1>ORS SDK Example</h1>
+  <button id="captureError">Capture Error</button>
+  <button id="captureMessage">Capture Message</button>
+  <div id="output"></div>
+
+  <script src="./dist/index.js"></script>
+  <script>
+    document.getElementById('captureError').addEventListener('click', () => {
+      try {
+        throw new Error('This is a test error from example-web');
+      } catch (error) {
+        orsSdk.captureException(error, { context: 'example-web' });
+      }
+    });
+
+    document.getElementById('captureMessage').addEventListener('click', () => {
+      orsSdk.captureMessage('This is a test message from example-web', { 
+        context: 'example-web',
+        level: 'info'
+      });
+    });
+  </script>
+</body>
+</html>

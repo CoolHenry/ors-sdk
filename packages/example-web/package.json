@@ -1,0 +1,21 @@
+{
+  "name": "@ors-sdk/example-web",
+  "version": "0.1.0",
+  "description": "Example web application using the ORS SDK",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "webpack",
+    "dev": "webpack serve",
+    "start": "serve dist"
+  },
+  "dependencies": {
+    "@ors-sdk/core": "^0.1.0"
+  },
+  "keywords": [
+    "example",
+    "web",
+    "sentry"
+  ],
+  "author": "",
+  "license": "MIT"
+}

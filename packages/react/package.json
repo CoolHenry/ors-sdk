@@ -1,0 +1,27 @@
+{
+  "name": "@ors-sdk/react",
+  "version": "0.1.0",
+  "description": "React integration for ORS SDK",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc -w",
+    "test": "jest"
+  },
+  "dependencies": {
+    "@ors-sdk/core": "^0.1.0",
+    "react": "^18.0.0"
+  },
+  "peerDependencies": {
+    "react": "^16.8.0 || ^17.0.0 || ^18.0.0"
+  },
+  "keywords": [
+    "react",
+    "sentry",
+    "error",
+    "monitoring"
+  ],
+  "author": "",
+  "license": "MIT"
+}

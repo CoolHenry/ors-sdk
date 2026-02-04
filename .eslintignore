@@ -1,0 +1,11 @@
+.history
+.husky
+.vscode
+coverage
+dist
+lib
+node_modules
+packages/example-web
+
+packages/core/src/collect/proto/
+packages/core/types/
